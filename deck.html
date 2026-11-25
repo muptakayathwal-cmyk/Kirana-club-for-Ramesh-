@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Restocking for Ramesh · case study v2</title>
+<meta name="theme-color" content="#8B4DF0">
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@500;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap">
+<style>
+:root{--or:#E04A26;--pu:#8B4DF0;--pu-d:#5B21B6;--gr:#1E8E3E;--rd:#D23B2A;--am:#9A6100;--lime:#C8F169;--ink:#17171C;--mut:#6C6C78;--line:#E4E4EA;--bg:#FFFAF6;--card:#FFFFFF;--card2:#F3F3F6;--f:'Plus Jakarta Sans','Noto Sans Devanagari',system-ui,sans-serif;--fd:'Plus Jakarta Sans','Noto Sans Devanagari',system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#14141A;color:var(--ink);font:16px/1.45 var(--f);overflow:hidden}
+#fit{position:absolute;left:50%;top:50%;width:1280px;height:720px;transform-origin:0 0}
+.s{position:absolute;inset:0;padding:56px 64px 64px;display:none;background:radial-gradient(70% 60% at 100% 0%,rgba(224,74,38,.10),transparent 60%),radial-gradient(60% 60% at 0% 100%,rgba(139,77,240,.08),transparent 60%),var(--bg);overflow:hidden}
+.s.on{display:flex;flex-direction:column;justify-content:center;animation:in .35s cubic-bezier(.2,.8,.2,1)}
+.s>.split{height:auto;flex:1}
+.s>*{flex:none}
+@keyframes in{from{opacity:0;transform:translateY(12px)}}
+.k{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--or);font-weight:800;margin-bottom:14px}
+h1{font:800 72px/1 var(--fd);letter-spacing:-.02em;margin:0}
+h2{font:800 38px/1.12 var(--fd);letter-spacing:-.025em;margin:0 0 10px;max-width:980px}
+h3{font-size:17px;font-weight:800;margin:0 0 6px}
+p{margin:0 0 10px;color:#3D3D47}
+.lead{font-size:19px;color:#55555F;max-width:860px;margin-bottom:26px}
+.mut{color:var(--mut)}.or{color:var(--or)}.gr{color:var(--gr)}.pu{color:var(--pu-d)}
+.g{display:grid;gap:16px}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}.g5{grid-template-columns:repeat(5,1fr)}
+.c{background:var(--card);border:1.5px solid var(--ink);box-shadow:0 3px 0 var(--ink);border-radius:14px;padding:18px}
+.c.ai{background:#F1E9FF}
+.c.hot{background:#FFEDE6}
+.c p{font-size:14.5px;margin:0;color:#3D3D47}
+.c .n{font:800 30px/1 var(--fd);color:var(--or);margin-bottom:10px}
+.tag{display:inline-block;font-size:11px;font-weight:800;padding:4px 9px;border-radius:6px;background:#E4D6FF;color:var(--pu-d);letter-spacing:.03em;margin-bottom:10px}
+.tag.o{background:#FFD9CC;color:#A63414}.tag.g{background:#D8F3DF;color:var(--gr)}.tag.r{background:#FBD9D3;color:var(--rd)}.tag.a{background:#FFE9B8;color:var(--am)}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th{text-align:left;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);padding:0 14px 10px;font-weight:800}
+td{padding:12px 14px;border-top:1px solid var(--line);vertical-align:top;color:#3D3D47}
+td:first-child{color:var(--ink);font-weight:700}
+table.tight td{padding:9px 14px;font-size:14px}table.tight .tag{margin:0}
+.foot{position:absolute;left:64px;right:64px;bottom:22px;display:flex;justify-content:space-between;font-size:11.5px;color:#9A9AA5;letter-spacing:.04em}
+.note{font-size:12.5px;color:var(--mut);margin-top:14px}
+.split{display:grid;grid-template-columns:1fr auto;gap:48px;align-items:center;height:100%}
+.ph{flex:none;width:288px;height:596px;border-radius:40px;padding:7px;background:linear-gradient(145deg,#2A2A31,#0E0E12);box-shadow:0 30px 80px rgba(0,0,0,.7),0 0 0 1px #33333C;position:relative}
+.ph .w{width:274px;height:582px;border-radius:33px;overflow:hidden;background:#0B0B0F}
+.ph iframe{width:380px;height:807px;border:0;transform:scale(.7211);transform-origin:0 0;display:block}
+.ph.sm{width:236px;height:488px;border-radius:34px;padding:6px}.ph.sm .w{width:224px;height:476px;border-radius:28px}.ph.sm iframe{transform:scale(.5895)}
+.phs{display:flex;gap:26px;align-items:center}
+.cap{text-align:center;font-size:12.5px;color:var(--mut);margin-top:10px;font-weight:700}
+ul{margin:0;padding:0;list-style:none}
+li{padding:9px 0 9px 26px;position:relative;font-size:15.5px;color:#3D3D47;border-top:1px solid var(--line)}
+li:first-child{border-top:0}
+li::before{content:"";position:absolute;left:4px;top:17px;width:8px;height:8px;border-radius:50%;background:var(--or)}
+li b{color:var(--ink)}
+.img{background:#fff;border-radius:16px;overflow:hidden;cursor:zoom-in;border:1px solid var(--line)}
+.img img{display:block;width:100%;height:100%;object-fit:contain}
+.q{font:700 19px/1.35 var(--fd);color:var(--ink);padding:12px 0;border-top:1px solid var(--line)}
+.q:first-child{border-top:0}
+.q span{font:800 11px var(--f);color:var(--or);letter-spacing:.1em;margin-right:12px}
+.flow{display:grid;grid-template-columns:repeat(9,1fr);gap:8px}
+.flow .st{background:var(--card);border:1.5px solid var(--ink);border-radius:12px;padding:12px 10px;font-size:12px;color:#4A4A55;min-height:200px}
+.flow .st b{display:block;color:var(--ink);font-size:13px;margin:6px 0 8px;line-height:1.2}
+.flow .st i{font:800 20px var(--fd);color:var(--or);font-style:normal}
+.flow .st.a{background:#F1E9FF}
+.flow .st em{display:block;font-style:normal;color:var(--rd);font-size:11px;margin-top:8px}
+#nav{color:#fff;position:fixed;right:14px;top:12px;display:flex;gap:8px;align-items:center;background:rgba(21,21,27,.92);border:1px solid #33333C;border-radius:99px;padding:6px 8px;font-size:12.5px;font-weight:700;z-index:20;opacity:.4;transition:opacity .2s}
+#nav:hover,#nav:focus-within{opacity:1}
+#nav button{font:inherit;color:#fff;background:#2A2A34;border:0;border-radius:99px;width:34px;height:34px;cursor:pointer}
+#nav a{color:#fff;text-decoration:none;background:var(--or);border-radius:99px;padding:8px 14px}
+#nav span{min-width:56px;text-align:center;color:#B9B6C4}
+#zoom{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;place-items:center;z-index:40;cursor:zoom-out;padding:30px}
+#zoom img{max-width:100%;max-height:100%;border-radius:12px;background:#fff}
+.btn{display:inline-block;background:var(--or);color:#fff;font-weight:800;border-radius:12px;padding:14px 22px;text-decoration:none;box-shadow:0 3px 0 #B93A1B}
+.sw{height:64px;border-radius:10px;border:1.5px solid var(--ink);margin-bottom:8px}
+.spec{display:flex;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:14px}.spec:first-of-type{border-top:0}
+.pp{display:inline-block;background:var(--lime);border:1.5px solid var(--ink);border-radius:7px;padding:1px 8px;font-weight:800}
+.kb{display:inline-block;background:#fff;border:1.5px solid var(--ink);box-shadow:0 2px 0 var(--ink);border-radius:9px;padding:7px 12px;font-weight:800;font-size:13px}
+a.src{color:var(--pu-d);font-weight:700}
+body.print{overflow:visible;background:#fff}body.print #fit{position:static;width:1280px;height:auto;transform:none!important}body.print .s{display:flex!important;flex-direction:column;justify-content:center;position:relative;inset:auto;width:1280px;height:720px;animation:none;break-after:page;page-break-after:always}body.print #nav,body.print #zoom{display:none!important}body.print .ph{box-shadow:0 0 0 1px #33333C!important}
+@page{size:1280px 720px;margin:0}
+.hero{display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center;flex:1}
+.hero h1{font-size:66px;line-height:.98}
+.hero .pills{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 26px}
+.hero .pills span{background:#fff;border:1.5px solid var(--ink);box-shadow:0 2px 0 var(--ink);border-radius:9px;padding:8px 12px;font-weight:800;font-size:13px}
+.hero .meta{display:grid;grid-template-columns:repeat(3,auto);gap:28px;justify-content:start;padding-top:18px;border-top:1.5px solid var(--ink)}
+.hero .meta div{font-size:14px;font-weight:800}.hero .meta small{display:block;font-size:11px;font-weight:700;color:var(--mut);letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px}
+.fan{display:flex;align-items:center}
+.fan>div{position:relative}
+.fan>div:nth-child(1){transform:rotate(-6deg) translateY(18px);margin-right:-64px;z-index:1}
+.fan>div:nth-child(2){z-index:3}
+.fan>div:nth-child(3){transform:rotate(6deg) translateY(18px);margin-left:-64px;z-index:1}
+.toc{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:26px}
+.toc button{font:inherit;text-align:left;cursor:pointer;background:#fff;border:1.5px solid var(--ink);box-shadow:0 3px 0 var(--ink);border-radius:14px;padding:18px;min-height:230px;display:flex;flex-direction:column}
+.toc button:hover{background:#FFEDE6}
+.toc b{font-size:34px;font-weight:800;color:var(--or);line-height:1}
+.toc h3{margin:14px 0 6px;font-size:18px}
+.toc p{font-size:13.5px;margin:0;color:#4A4A55}
+.toc small{margin-top:auto;font-weight:800;font-size:12px;color:var(--mut);letter-spacing:.06em}
+.fm{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+.fm .c{padding:14px 16px}
+.fm h3{font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.fm .it{display:flex;justify-content:space-between;gap:8px;font-size:13.5px;padding:5px 0;border-top:1px solid var(--line);color:#3D3D47}
+.fm .it:first-of-type{border-top:0}
+.fm .it i{font-style:normal;font-size:10px;font-weight:800;padding:2px 6px;border-radius:5px;background:#E4D6FF;color:var(--pu-d);flex:none;align-self:center}
+.fm .it i.k{background:#D8F3DF;color:var(--gr)}
+.loop{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px;position:relative}
+.loop .c{padding:16px}
+.loop .stg{font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--or);margin-bottom:6px}
+.loop h3{font-size:19px;margin-bottom:4px}
+.loop .when{font-size:12px;font-weight:700;color:var(--mut);margin-bottom:10px}
+.loop ul li{font-size:13.5px;padding:6px 0 6px 20px}.loop ul li::before{top:13px;width:6px;height:6px}
+.fm.six{grid-template-columns:repeat(3,1fr)}
+.fm .it b{font-weight:800;color:var(--ink)}
+.fm .it i.c0{background:#FFD9CC;color:#A63414}.fm .it i.smp{background:#FFE9B8;color:var(--am)}.fm .it i.d{background:#E9E9EE;color:#6C6C78}
+.fm .it{font-size:12.5px;padding:4px 0}
+.fm .c{padding:12px 14px}.fm h3{font-size:14px;margin-bottom:6px}
+.wf{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}
+.wf .col>b{display:block;font-size:11px;letter-spacing:.14em;color:var(--or);font-weight:800;margin-bottom:8px}
+.wf .st{background:#fff;border:1.5px solid var(--ink);border-radius:12px;padding:10px 12px;font-size:12.5px;color:#4A4A55;margin-bottom:8px;position:relative}
+.wf .st b{display:block;color:var(--ink);font-size:13.5px;margin-bottom:2px}
+.wf .st.a{background:#F1E9FF}
+.wf .st em{font-style:normal;color:var(--rd);font-size:11px;display:block;margin-top:4px}
+</style>
+</head>
+<body>
+<div id="fit">
+
+<section class="s"><div class="hero">
+  <div>
+    <div class="k">Kirana Club · UI/UX case study · v2</div>
+    <h1>Restocking<br>for <span class="or">Ramesh</span></h1>
+    <p class="lead" style="margin:20px 0 0;max-width:440px">The monthly restock, redesigned as a two minute order that an AI helper prepares and the shopkeeper approves.</p>
+    <div class="pills"><span>Hindi and English</span><span>3 personas</span><span>Live prototype</span><span>Kirana Club's own design language</span></div>
+    <div class="meta"><div><small>Designed by</small>Manali Gupta</div><div><small>Scope</small>Research, UX, UI, prototype</div><div><small>Version</small>v2 · Nov 2026</div></div>
+  </div>
+  <div class="fan"><div><div class="ph sm" data-src="index.html?embed=1&lang=hi&go=lock"></div></div><div><div class="ph" data-src="index.html?embed=1&lang=en&go=home"></div></div><div><div class="ph sm" data-src="index.html?embed=1&lang=en&go=call"></div></div></div>
+</div></section>
+
+<section class="s">
+  <div class="k">Contents</div>
+  <h2>Five parts, from the shop counter to the roadmap</h2>
+  <div class="toc">
+    <button data-go="3"><b>01</b><h3>User and problem</h3><p>The brief, three personas, how he orders today, the app audit, the problem and our assumptions.</p><small>SLIDES 3 TO 10</small></button>
+    <button data-go="11"><b>02</b><h3>Idea and features</h3><p>Restocking as a loop of four moments. Every feature named and placed on one map.</p><small>SLIDES 11 TO 12</small></button>
+    <button data-go="13"><b>03</b><h3>Design system</h3><p>Kirana Club's design language, eight UI rules, and language as the product.</p><small>SLIDES 13 TO 15</small></button>
+    <button data-go="16"><b>04</b><h3>Solution, live</h3><p>The workflow, then each loop stage with a working phone.</p><small>SLIDES 16 TO 27</small></button>
+    <button data-go="28"><b>05</b><h3>Proof and plan</h3><p>Before and after, decisions, what is real, metrics, validation, risks, roadmap.</p><small>SLIDES 28 TO 36</small></button>
+  </div>
+  <div class="foot"><span>Restocking for Ramesh</span><span>Tap a part to jump to it</span></div>
+</section>
+
+<section class="s">
+  <div class="k">TL;DR</div>
+  <h2>The app treats every restock like a first visit. We turn it into a loop that is already running.</h2>
+  <div class="g g5" style="margin-top:26px">
+    <div class="c"><span class="tag r">Problem</span><p>Once a month Ramesh rebuilds a long list from memory, reads it out on calls, pays a large amount and has no list to check what arrives.</p></div>
+    <div class="c"><span class="tag a">Insight · assumption</span><p>A restock is not one list. Every item runs out at its own speed, and the need shows up during the month, not on order day.</p></div>
+    <div class="c ai"><span class="tag">Solution</span><p>A loop of four moments: <b>capture</b> needs all month, <b>compose</b> a Due Now basket, <b>confirm</b> in one cart, <b>check</b> on arrival. <b>Kari</b>, an AI helper, runs each step. Ramesh makes the final tap.</p></div>
+    <div class="c"><span class="tag g">How we will know</span><p>Time to place a restock, order lines captured before order day, fewer mid-month emergency orders, missing items reported.</p></div>
+    <div class="c hot"><span class="tag o">The ask</span><p>Approve a four step validation: shop visits, a voice test, a click-through test with this prototype, then a one district pilot.</p></div>
+  </div>
+  <div class="foot"><span>Restocking for Ramesh</span><span>The one-page version</span></div>
+</section>
+
+<section class="s">
+  <div class="k">Brief and approach</div>
+  <h2>Five tasks, worked as one product process</h2>
+  <div class="g" style="grid-template-columns:1.5fr 1fr;margin-top:22px">
+    <div>
+      <div class="g g5">
+        <div class="c"><div class="n">1</div><h3>Understand</h3><p>The retailer and how he orders today, offline and in the app.</p></div>
+        <div class="c"><div class="n">2</div><h3>Frame</h3><p>The most significant pain and what we assume.</p></div>
+        <div class="c"><div class="n">3</div><h3>Scope</h3><p>Twelve possible fixes down to three themes.</p></div>
+        <div class="c"><div class="n">4</div><h3>Build</h3><p>Flows, structure, screens and a working prototype.</p></div>
+        <div class="c"><div class="n">5</div><h3>Prove</h3><p>Decisions, metrics, validation, risks, roadmap.</p></div>
+      </div>
+      <div class="g g2" style="margin-top:16px">
+        <div class="c"><h3>Constraints from the brief</h3><p>Mobile first. A busy shopkeeper at the counter. Low digital familiarity. State every assumption.</p></div>
+        <div class="c"><h3>What this is built on</h3><p>Desk research, an audit of the current app, and one conversation with someone who knows these shops. <b class="or">Not yet:</b> shop visits or retailer interviews.</p></div>
+      </div>
+    </div>
+    <div class="img" style="height:440px"><img data-z src="notes/n_tasks_all.webp" alt="The five tasks, handwritten"></div>
+  </div>
+  <div class="foot"><span>Restocking for Ramesh</span><span>Tap any handwritten note to zoom</span></div>
+</section>
+
+<section class="s">
+  <div class="k">Current state · the retailer</div>
+  <h2>Meet Ramesh. He is the buyer, the stock counter and the cashier.</h2>
+  <div class="g" style="grid-template-columns:1fr 1.25fr 1fr;margin-top:20px">
+    <div class="c">
+      <h3>Ramesh, 43 · Kanpur</h3>
+      <ul>
+        <li><b>Shop:</b> sole proprietor kirana</li>
+        <li><b>Restock:</b> monthly, a long list</li>
+        <li><b>Pays:</b> on credit, at month end</li>
+        <li><b>Phone:</b> smartphone, WhatsApp, voice notes</li>
+        <li><b>Language:</b> Hindi first, reads little English</li>
+        <li><b>Tech comfort:</b> low to mid</li>
+      </ul>
+    </div>
+    <div class="c">
+      <div class="q"><span>01</span>"I only find out something is short when a customer asks for it."</div>
+      <div class="q"><span>02</span>"I read my list out on calls. They mishear, I repeat."</div>
+      <div class="q"><span>03</span>"I can't check if my distributor's price is fair."</div>
+      <div class="q"><span>04</span>"When the goods arrive I have no list to check them against."</div>
+    </div>
+    <div class="img" style="height:400px"><img data-z src="notes/n_profile.webp" alt="Persona notes"></div>
+  </div>
+  <p class="note">Persona from the brief. The quotes are our reading of the flow notes and the app audit, not interviews.</p>
+  <div class="foot"><span>Restocking for Ramesh</span><span>Goals: never run out, spend less time ordering, keep the credit he has</span></div>
+</section>
+
+<section class="s">
+  <div class="k">Personas · three shopkeepers, one app</div>
+  <h2>Ramesh is the primary user. Two more people keep the design honest.</h2>
+  <div class="g g3" style="margin-top:20px">
+    <div class="c hot"><span class="tag o">Primary · old user</span><h3>Ramesh, 43 · Kanpur kirana</h3><p style="margin-bottom:10px">Restocks monthly with the same long list. Low to mid tech comfort. Pays at month end.</p><ul><li><b>Needs:</b> his usual order, ready</li><li><b>Fears:</b> a wrong order, losing credit</li><li><b>Gets:</b> Due Now basket, Yaad List, khata</li></ul></div>
+    <div class="c"><span class="tag">New user</span><h3>Sunita, 34 · new general store</h3><p style="margin-bottom:10px">Opened three months ago. No order history. Small budget, careful with every rupee.</p><ul><li><b>Needs:</b> help deciding what to stock</li><li><b>Fears:</b> over-buying, a confusing app</li><li><b>Gets:</b> first list by call, photo or starter; cash or UPI first</li></ul></div>
+    <div class="c ai"><span class="tag">Bulk buyer</span><h3>Imran, 29 · bigger shop</h3><p style="margin-bottom:10px">Buys three times Ramesh's volume and also supplies smaller shops. Comfortable with apps. Chases the best rate.</p><ul><li><b>Needs:</b> thok bhav, a higher credit limit</li><li><b>Fears:</b> paying more than the next shop</li><li><b>Gets:</b> slab pricing, mohalla pool, bhav lock</li></ul></div>
+  </div>
+  <p class="note">Ramesh comes from the brief. Sunita and Imran are proto-personas we wrote to stress the design; neither is based on interviews yet. All three can be switched in the prototype.</p>
+  <div class="foot"><span>Restocking for Ramesh</span><span>Design rule: simple for Ramesh first, never slower for Imran</span></div>
+</section>
+
+<section class="s">
+  <div class="k">Current state · offline</div>
+  <h2>Today he orders by memory, phone calls and trust</h2>
+  <div class="img" style="height:300px;margin:18px 0"><img data-z src="notes/flow_trad.webp" alt="Traditional ordering flow, mapped by hand"></div>
+  <div class="g g3">
+    <div class="c"><h3>Three people, one phone</h3><p>Kirana owner, distributor or middleman, delivery person. Every hand-off is a call, a WhatsApp or a visit.</p></div>
+    <div class="c"><h3>The ledger is the payment system</h3><p>The amount goes in the distributor's bahi khata and is paid at month end. Any app competes with this credit.</p></div>
+    <div class="c"><h3>The price is whatever one person says</h3><p>The rate is quoted on the call. Ramesh has no quick way to compare it.</p></div>
+  </div>
+  <div class="foot"><span>Restocking for Ramesh</span><span>Six pain points, two strengths to keep: trust and month-end credit</span></div>
+</section>
+
+<section class="s">
+  <div class="k">Gap · audit of the current app</div>
+  <h2>The app makes him start from nothing, every single time</h2>
+  <div class="g" style="grid-template-columns:1.3fr 1fr;margin-top:20px">
+    <div class="g g3">
+      <div class="c"><div class="n">01</div><h3>Lands on the feed</h3><p>A distraction. He came to restock.</p></div>
+      <div class="c"><div class="n">02</div><h3>Order page</h3><p>No search on this page.</p></div>
+      <div class="c"><div class="n">03</div><h3>Add to cart</h3><p>Jumps to a brand page. Quantity is unclear.</p></div>
+      <div class="c"><div class="n">04</div><h3>Small cart window</h3><p>The button turns into an offer pop-up.</p></div>
+      <div class="c"><div class="n">05</div><h3>Payment</h3><p>Upfront payment, pincode check, delivery charges.</p></div>
+      <div class="c"><div class="n">06</div><h3>Order placed</h3><p>No ETA. Nothing saved for next time.</p></div>
+    </div>
+    <div>
+      <div class="img" style="height:210px"><img data-z src="notes/n_kcflow.webp" alt="Current app flow, first sketch"></div>
+      <div class="c" style="margin-top:14px"><span class="tag g">Keep</span><p>Buy price, sell price and margin already appear on products. The new design keeps kamai on every row.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span>Restocking for Ramesh</span><span>Audit by Manali Gupta. I have not independently re-checked the live app.</span></div>
+</section>
+
+<section class="s"><div style="display:flex;flex-direction:column;justify-content:center;height:100%">
+  <div class="k">Problem statement</div>
+  <h1 style="font-size:58px;line-height:1.12;max-width:1080px">Once a month, Ramesh rebuilds a long list <span class="or">from memory</span>, pays a <span class="or">large amount</span>, and <span class="or">cannot check</span> what arrived.</h1>
+  <div class="g g2" style="margin-top:34px;max-width:1000px">
+    <div class="c ai"><span class="tag">How might we</span><p style="font-size:17px;color:var(--ink)">…let Ramesh place his monthly restock in minutes, in his own words, and trust what arrives?</p></div>
+    <div class="c"><span class="tag o">Constraint we keep</span><p style="font-size:17px">The distributor relationship runs on trust and month-end credit. The design must not break it.</p></div>
+  </div>
+</div></section>
+
+<section class="s">
+  <div class="k">Assumptions · stated so they can be tested</div>
+  <h2>Seven assumptions shape the design. Each has a test.</h2>
+  <table class="tight" style="margin-top:8px">
+    <tr><th>Area</th><th>We assume</th><th>So the design</th><th>How we check</th><th>Confidence</th></tr>
+    <tr><td>Order day</td><td>He places one main order a month, with small top-ups.</td><td>Reminds before month end, allows add-ons</td><td>Shop visits. Public sources hint at weekly.</td><td><span class="tag r">Low</span></td></tr>
+    <tr><td>Rhythm</td><td>Each item has a steady reorder interval that can be learned from his orders.</td><td>Prefills only what is due now</td><td>Interval analysis on real order history</td><td><span class="tag a">Medium</span></td></tr>
+    <tr><td>Language</td><td>He reads Hindi script comfortably and knows trade words like order, bill and scheme. The prototype opens in English for reviewers.</td><td>Hindi in Devanagari and English, one tap apart</td><td>Read-aloud test with 8 to 10 retailers</td><td><span class="tag r">Low</span></td></tr>
+    <tr><td>Voice</td><td>Speaking an order is easier than typing it.</td><td>Kari works as a phone call</td><td>Say a list aloud to a Kari mock</td><td><span class="tag a">Medium</span></td></tr>
+    <tr><td>AI suggestions</td><td>Order history, prices and season are enough to suggest useful changes.</td><td>Shows a reason, lets him say no</td><td>Accept rate in the pilot</td><td><span class="tag r">Low</span></td></tr>
+    <tr><td>Photo reading</td><td>A model can read handwritten lists, shelves and bills well enough.</td><td>Always asks when unsure</td><td>Test on 50 real parchis and bills</td><td><span class="tag r">Low</span></td></tr>
+    <tr><td>Credit</td><td>Kirana Club can offer month-end credit like the distributor's ledger.</td><td>Khata as default payment</td><td>Business confirms partner, limits, fees</td><td><span class="tag r">Low</span></td></tr>
+  </table>
+  <div class="foot"><span>Restocking for Ramesh</span><span>Confidence is our own read. Lowest rows are tested first.</span></div>
+</section>
+
+<section class="s">
+  <div class="k">The idea</div>
+  <h2>Restocking is a loop with four moments, not a list</h2>
+  <p class="lead" style="margin-bottom:0">Every item runs out at its own speed, and the need appears mid-month when a customer asks. So the design follows the month, not the order form.</p>
+  <div class="loop">
+    <div class="c"><div class="stg">01 · CAPTURE</div><h3>Catch the need</h3><div class="when">All month, in seconds</div><ul><li><b>Yaad List:</b> note it by tap, voice or photo</li><li><b>Lost-sale tap:</b> "customer asked, I had none"</li><li>Kari listens on a call</li></ul></div>
+    <div class="c ai"><div class="stg">02 · COMPOSE</div><h3>Build the basket</h3><div class="when">Order day, mostly done for him</div><ul><li><b>Due Now basket:</b> only what is running out</li><li><b>My Bundles:</b> a set in one tap</li><li>Kari suggests, with a reason</li></ul></div>
+    <div class="c"><div class="stg">03 · CONFIRM</div><h3>Decide and pay</h3><div class="when">One cart, one tap</div><ul><li><b>Cart:</b> fill-up nudge, budget, schemes</li><li>Kari double-checks</li><li>Khata, UPI or cash</li></ul></div>
+    <div class="c"><div class="stg">04 · CHECK</div><h3>Receive and learn</h3><div class="when">Next day, then it repeats</div><ul><li>Track, and add more before dispatch</li><li><b>Goods Check</b> by list or bill photo</li><li>His rhythm updates for next time</li></ul></div>
+  </div>
+  <p class="note">The rule across all four: AI does the work, Ramesh makes the call. Kari never places an order.</p>
+  <div class="foot"><span>Restocking for Ramesh</span><span>Check feeds Capture: what arrived and when teaches the next Due Now basket</span></div>
+</section>
+
+<section class="s">
+  <div class="k">Feature map · named and placed in the loop</div>
+  <h2>Every feature, where it sits and how far it is built</h2>
+  <div class="fm six">
+    <div class="c"><h3>01 Capture</h3><div class="it"><span><b>Yaad List</b> · running list for the next order</span><i class="c0">CORE</i></div><div class="it"><span><b>Lost-sale tap</b> · logs "customer asked"</span><i class="">BUILT</i></div><div class="it"><span><b>Kari Call</b> · order or note by voice</span><i class="">BUILT</i></div><div class="it"><span><b>Parchi Scan</b> · reads a handwritten list</span><i class="smp">SAMPLE</i></div><div class="it"><span><b>Shelf Scan</b> · spots what is low</span><i class="smp">SAMPLE</i></div></div>
+    <div class="c ai"><h3>02 Compose</h3><div class="it"><span><b>Due Now basket</b> · prefills only what is due</span><i class="c0">CORE</i></div><div class="it"><span><b>My Bundles</b> · saved sets, one tap</span><i class="c0">CORE</i></div><div class="it"><span><b>Item History</b> · last 3 buys and next due date</span><i class="">BUILT</i></div><div class="it"><span><b>Kari Suggestions</b> · changes with a reason</span><i class="">BUILT</i></div><div class="it"><span><b>Search</b> · text, voice or camera</span><i class="">BUILT</i></div></div>
+    <div class="c"><h3>03 Confirm</h3><div class="it"><span><b>Cart</b> · edit, empty, save as bundle</span><i class="">BUILT</i></div><div class="it"><span><b>Fill-up Nudge</b> · reach the next price slab</span><i class="">BUILT</i></div><div class="it"><span><b>Budget Mode</b> · holds back the least urgent</span><i class="">BUILT</i></div><div class="it"><span><b>Kari Double-check</b> · forgotten items, limit</span><i class="">BUILT</i></div><div class="it"><span><b>Thok Bhav</b> · bulk slab price on the row</span><i class="">BUILT</i></div><div class="it"><span><b>Schemes and Chai Combo</b> · found and applied</span><i class="">BUILT</i></div><div class="it"><span><b>Wallet, Khata, UPI, Cash</b> · one bill, three ways to pay</span><i class="">BUILT</i></div></div>
+    <div class="c"><h3>04 Check</h3><div class="it"><span><b>Order Tracking</b> · four plain statuses</span><i class="">BUILT</i></div><div class="it"><span><b>Add to Open Order</b> · until it is dispatched</span><i class="">BUILT</i></div><div class="it"><span><b>2-minute Edit</b> · fix a mistake at once</span><i class="">BUILT</i></div><div class="it"><span><b>Goods Check</b> · OK, short or damaged</span><i class="">BUILT</i></div><div class="it"><span><b>Bill Scan</b> · matches the bill to the order</span><i class="smp">SAMPLE</i></div><div class="it"><span><b>Refund to Khata</b> · short items come off dues</span><i class="">BUILT</i></div><div class="it"><span><b>Autopilot</b> · monthly list, needs his yes</span><i class="">BUILT</i></div></div>
+    <div class="c"><h3>Across every step</h3><div class="it"><span><b>Hindi and English</b> · Devanagari, one tap apart</span><i class="">BUILT</i></div><div class="it"><span><b>Explain and Listen</b> · a "?" on every new idea</span><i class="">BUILT</i></div><div class="it"><span><b>First List, 3 ways</b> · call, photo or starter</span><i class="">BUILT</i></div><div class="it"><span><b>Three personas</b> · old, new and bulk buyer</span><i class="">BUILT</i></div></div>
+    <div class="c hot"><h3>Later bets</h3><div class="it"><span><b>Mohalla Pool</b> · shops pool for a truck rate</span><i class="smp">SAMPLE</i></div><div class="it"><span><b>Bhav Lock</b> · hold a price for 7 days</span><i class="smp">SAMPLE</i></div><div class="it"><span><b>Season Pack</b> · Kari picks for the season</span><i class="smp">SAMPLE</i></div><div class="it"><span><b>Missed-call Order</b> · no app or data needed</span><i class="d">IDEA</i></div><div class="it"><span><b>Standing Order</b> · fixed item, fixed day</span><i class="d">IDEA</i></div><div class="it"><span><b>Shared List</b> · family adds from WhatsApp</span><i class="d">IDEA</i></div></div>
+  </div>
+  <div class="foot"><span>Restocking for Ramesh</span><span>CORE: the three we lead with. BUILT: works in the prototype. SAMPLE: shown with sample results. IDEA: not built.</span></div>
+</section>
+
+<section class="s">
+  <div class="k">Design language · read from the live app</div>
+  <h2>We redesigned inside Kirana Club's own system, not on top of it</h2>
+  <div class="g" style="grid-template-columns:1.1fr 1fr 1.2fr;margin-top:18px">
+    <div class="c"><h3>Colour, taken from the app</h3>
+      <div class="g g4" style="gap:8px;margin-top:10px">
+        <div><div class="sw" style="background:#E04A26"></div><b style="font-size:12px">Brand</b><div class="mut" style="font-size:11px">#E04A26 · primary action</div></div>
+        <div><div class="sw" style="background:#8B4DF0"></div><b style="font-size:12px">Violet</b><div class="mut" style="font-size:11px">#8B4DF0 · header, Kari</div></div>
+        <div><div class="sw" style="background:#C8F169"></div><b style="font-size:12px">Lime</b><div class="mut" style="font-size:11px">#C8F169 · buy price</div></div>
+        <div><div class="sw" style="background:#17171C"></div><b style="font-size:12px">Ink</b><div class="mut" style="font-size:11px">#17171C · text, outlines</div></div>
+      </div>
+      <p class="note">One job per colour. Orange is only ever the next step. Violet is search and anything Kari does.</p></div>
+    <div class="c"><h3>Components kept from the app</h3>
+      <div class="spec"><span class="pp">₹415</span><span>Buy price in a lime pill</span></div>
+      <div class="spec"><span class="mut" style="font-weight:600">MRP ₹470</span><span>MRP in grey beside it</span></div>
+      <div class="spec"><b>₹55 margin</b><span>Margin in bold, always shown</span></div>
+      <div class="spec"><span class="kb">+ Add</span><span>Outlined button, hard shadow</span></div>
+      <div class="spec"><span class="kb" style="color:#E04A26">− 6 +</span><span>Stepper, same outline</span></div>
+    </div>
+    <div class="c"><h3>What we added to the system</h3>
+      <ul><li><b>Kari card:</b> light violet, so AI help is always recognisable</li><li><b>Status chips:</b> green applied, amber nudge, red problem</li><li><b>Hero card:</b> one number, one orange button</li><li><b>Type:</b> one sans family, 800 for numbers, 14px minimum body</li><li><b>Tap targets:</b> 38px controls inside 48px rows</li></ul></div>
+  </div>
+  <p class="note">Sources: the app screens shown on kirana.club and the Play Store listing, viewed 25 November 2026. Hex values are sampled by eye from those images, not from a brand file.</p>
+  <div class="foot"><span>Restocking for Ramesh</span><span>Design system</span></div>
+</section>
+
+<section class="s">
+  <div class="k">UI and UX principles</div>
+  <h2>Eight rules every screen was checked against</h2>
+  <div class="g g4" style="margin-top:20px">
+    <div class="c"><div class="n">1</div><h3>One primary action</h3><p>Each screen has a single orange button. Everything else is outlined or a link.</p></div>
+    <div class="c"><div class="n">2</div><h3>Recognition over recall</h3><p>Real pack photos, last quantity and last order date. He never has to remember.</p></div>
+    <div class="c"><div class="n">3</div><h3>Numbers before words</h3><p>Total, price and margin lead. Sentences are short and optional.</p></div>
+    <div class="c"><div class="n">4</div><h3>Progressive disclosure</h3><p>Suggestions and deals stay folded until asked for. Home stays calm.</p></div>
+    <div class="c"><div class="n">5</div><h3>Forgiving by default</h3><p>Steppers, a reset, a 2 minute edit window, and Kari never places the order.</p></div>
+    <div class="c"><div class="n">6</div><h3>Visible system status</h3><p>Chips say what is applied. Tracking has four plain steps. Every tap answers back.</p></div>
+    <div class="c"><div class="n">7</div><h3>Consistency</h3><p>Price pill, add button and header match the live app, so nothing must be relearned.</p></div>
+    <div class="c"><div class="n">8</div><h3>Access for everyone</h3><p>Hindi script and English, explain and listen buttons, voice and camera input, dark text on light.</p></div>
+  </div>
+  <div class="foot"><span>Restocking for Ramesh</span><span>Based on Nielsen's usability heuristics, applied to a shop counter</span></div>
+</section>
+
+<section class="s"><div class="split">
+  <div>
+    <div class="k">Language · the user decides the design</div>
+    <h2>For this user, language is the product</h2>
+    <p class="lead" style="margin-bottom:16px">Ramesh reads Hindi first and little English. Sunita is new to ordering apps. If a word is not understood, the feature behind it does not exist.</p>
+    <div class="g g2" style="max-width:700px">
+      <div class="c"><h3>Proper Hindi, proper script</h3><p>Every screen is written in Devanagari and set in Noto Sans Devanagari, with taller line height and no letter spacing so conjuncts stay intact.</p></div>
+      <div class="c"><h3>English, one tap away</h3><p>Both languages are complete. A new user picks on the first screen; anyone can switch later.</p></div>
+      <div class="c ai"><h3>A "?" that explains</h3><p>Margin, bulk price, khata, wallet and Kari each open a two line explanation in plain words.</p></div>
+      <div class="c ai"><h3>"सुनें" · Listen</h3><p>Every explanation can be read aloud, for anyone who would rather hear than read.</p></div>
+    </div>
+    <p class="note" style="max-width:700px">Words he already uses stay as they are: ऑर्डर, बिल, स्कीम, मार्जिन. Numbers stay in Western digits, as on his price tags and in the live app. The Hindi was written from a glossary and needs a native writer's review.</p>
+  </div>
+  <div class="phs"><div><div class="ph sm" data-src="index.html?embed=1&lang=hi&go=home"></div><div class="cap">हिन्दी</div></div><div><div class="ph sm" data-src="index.html?embed=1&lang=en&go=home"></div><div class="cap">English</div></div></div>
+</div></section>
+
+<section class="s">
+  <div class="k">Workflow · one month, end to end</div>
+  <h2>How one restock flows through the loop</h2>
+  <div class="wf">
+    <div class="col"><b>01 CAPTURE · DAY 1 TO 24</b>
+      <div class="st a"><b>A customer asks for soya</b>He taps "+ Add a note" or tells Kari. It lands on the Yaad List.<em>Was: forgotten by order day</em></div>
+      <div class="st a"><b>A shelf looks thin</b>Shelf Scan, or one tap on Item History.<em>Was: noticed too late</em></div></div>
+    <div class="col"><b>02 COMPOSE · DAY 25</b>
+      <div class="st a"><b>Kari sends the reminder</b>"14 items are due now, plus 2 from your Yaad List."<em>Was: memory is the trigger</em></div>
+      <div class="st a"><b>Due Now basket opens</b>Prefilled by each item's rhythm. A bundle adds a set in one tap.<em>Was: starts from nothing</em></div></div>
+    <div class="col"><b>03 CONFIRM · SAME DAY</b>
+      <div class="st"><b>One cart</b>Fill-up nudge, budget, schemes, Kari's double-check.<em>Was: offer pop-ups, small cart</em></div>
+      <div class="st"><b>Order placed</b>Khata, UPI or cash. ETA, 2 minute edit, WhatsApp copy.<em>Was: upfront only, no ETA</em></div></div>
+    <div class="col"><b>04 CHECK · NEXT DAY</b>
+      <div class="st"><b>Track, add more</b>Four statuses. Add items until dispatch.<em>Was: waiting and calling</em></div>
+      <div class="st a"><b>Goods Check, then learn</b>Short items refund to khata. Each item's rhythm updates.<em>Was: no list, nothing saved</em></div></div>
+  </div>
+  <p class="note">Purple steps are where Kari does the work. Every step is live in the prototype on the following slides.</p>
+  <div class="foot"><span>Restocking for Ramesh</span><span>A new shop enters at Compose, through a first list by call, photo or starter</span></div>
+</section>
+
+<section class="s"><div class="split">
+  <div>
+    <div class="k">Live · 01 Capture</div>
+    <h2>Yaad List: catch the need the moment it appears</h2>
+    <ul style="margin-top:18px;max-width:600px">
+      <li><b>One tap, any day.</b> "+ Add a note" opens a sheet: type, pick, or say it to Kari.</li>
+      <li><b>Lost-sale tap.</b> "Customer asked, I had none" counts how often it happens.</li>
+      <li><b>It shows its source.</b> Each line says "Customer asked · 18 Nov" or "You said it".</li>
+      <li><b>It joins the order by itself.</b> Yaad items are already in the Due Now basket.</li>
+      <li><b>Budget overflow lands here too.</b> Items held back are kept for next time.</li>
+    </ul>
+    <p class="note">This answers his first pain: "I only find out something is short when a customer asks for it."</p>
+  </div>
+  <div class="phs"><div><div class="ph sm" data-src="index.html?embed=1&lang=en&go=cap"></div><div class="cap">Add a note</div></div><div><div class="ph sm" data-src="index.html?embed=1&lang=hi&go=cap"></div><div class="cap">हिन्दी</div></div></div>
+</div></section>
+
+<section class="s"><div class="split">
+  <div>
+    <div class="k">Live · 02 Compose</div>
+    <h2>Due Now basket: only what is running out is prefilled</h2>
+    <ul style="margin-top:18px;max-width:600px">
+      <li><b>Three bands.</b> Due now, Due soon, Still stocked, from each item's own buying rhythm.</li>
+      <li><b>One number, one button.</b> The due total and "Order this".</li>
+      <li><b>My Bundles.</b> "Monthly staples" and "Weekly fast movers" add a whole set in one tap. Any cart can be saved as a bundle.</li>
+      <li><b>Item History.</b> Tap a name: last three buys, price each time, and when it is next due.</li>
+      <li><b>Kari Suggestions.</b> Folded into one line until he asks.</li>
+    </ul>
+    <p class="note">Try it: scroll to "Still stocked", tap a product name for its history, or add a bundle.</p>
+  </div>
+  <div class="phs"><div><div class="ph sm" data-src="index.html?embed=1&lang=en&go=home"></div><div class="cap">Due Now</div></div><div><div class="ph sm" data-src="index.html?embed=1&lang=en&go=item"></div><div class="cap">Item History</div></div></div>
+</div></section>
+
+<section class="s"><div class="split">
+  <div>
+    <div class="k">Live · Kari across the loop</div>
+    <h2>Kari is a phone call, because that is how he orders today</h2>
+    <ul style="margin-top:18px;max-width:640px">
+      <li><b>Speaks his way.</b> "Atta 8 bori kar do aur 2 peti sarson tel" is understood as written.</li>
+      <li><b>A slip, with pictures.</b> Every item Kari heard appears with its photo and a stepper to correct it.</li>
+      <li><b>It asks, it does not assume.</b> "Tata Tea Gold stock mein nahi hai, Red Label rakh doon?"</li>
+      <li><b>It nudges once.</b> On "bas", Kari mentions anything he usually takes but left out.</li>
+      <li><b>It answers.</b> "Toor dal ka bhav kya hai?" and "Mera order kahan hai?"</li>
+    </ul>
+    <p class="note">Try it: tap a sample line under the chat, or type your own. The understanding runs in the browser.</p>
+  </div>
+  <div><div class="ph" data-src="index.html?embed=1&lang=en&go=call"></div><div class="cap">Live. Tap the sample lines.</div></div>
+</div></section>
+
+<section class="s"><div class="split">
+  <div>
+    <div class="k">Live · Capture and Check by photo</div>
+    <h2>A photo instead of typing</h2>
+    <div class="g g3" style="margin-top:18px;max-width:700px">
+      <div class="c ai"><span class="tag">Parchi</span><p>Reads his handwritten list. When a line is smudged it shows two pictures and asks which one.</p></div>
+      <div class="c ai"><span class="tag">Shelf</span><p>Looks at a photo of the shelf and marks what is running low.</p></div>
+      <div class="c ai"><span class="tag">Bill</span><p>Matches the delivery bill to the order and marks what is missing.</p></div>
+    </div>
+    <p class="note" style="max-width:700px">In the prototype the scan results are sample data on a real shop photo. In the product each one needs a vision model, tested on real parchis, shelves and bills.</p>
+    <p class="note">Try it: tap the white shutter, then switch between Parchi and Shelf.</p>
+  </div>
+  <div><div class="ph" data-src="index.html?embed=1&lang=en&go=shelf"></div><div class="cap">Live. Tap the shutter.</div></div>
+</div></section>
+
+<section class="s"><div class="split">
+  <div>
+    <div class="k">Live · 03 Confirm</div>
+    <h2>One cart, and credit that works like his distributor's ledger</h2>
+    <ul style="margin-top:18px;max-width:560px">
+      <li><b>A real cart.</b> Count in the header; edit, empty, or save as a bundle. A green bar always shows what he saves and his margin.</li>
+      <li><b>Fill-up Nudge and Budget Mode.</b> "Take 4 more and save ₹100", or set a budget and Kari holds back the least urgent items.</li>
+      <li><b>Kari double-checks.</b> Compares with last month, checks the khata limit, offers forgotten items and schemes.</li>
+      <li><b>Put it on khata.</b> Default payment for a returning shop, settled once at month end.</li>
+      <li><b>UPI and cash stay.</b> A new shop starts with these; khata unlocks after the first order.</li>
+      <li><b>After the tap:</b> an ETA, two minutes to edit, and a WhatsApp copy.</li>
+    </ul>
+    <p class="note">Khata replaces the wallet idea from v1. It still needs a business decision on partner, limits and fees.</p>
+  </div>
+  <div class="phs"><div><div class="ph sm" data-src="index.html?embed=1&lang=en&go=review"></div><div class="cap">Cart</div></div><div><div class="ph sm" data-src="index.html?embed=1&lang=en&go=khata"></div><div class="cap">Khata</div></div></div>
+</div></section>
+
+<section class="s"><div class="split">
+  <div>
+    <div class="k">Live · 04 Check</div>
+    <h2>Receive and trust, then next month is ready</h2>
+    <ul style="margin-top:18px;max-width:560px">
+      <li><b>Add to Open Order.</b> Until dispatch, more items join the same delivery.</li>
+      <li><b>The list he never had.</b> Every item marked OK, Short or Damaged.</li>
+      <li><b>Or one photo.</b> Kari matches the bill and marks what is missing.</li>
+      <li><b>Problems have money attached.</b> A short item comes straight off the khata.</li>
+      <li><b>The loop closes.</b> What arrived resets each item's rhythm for the next Due Now basket.</li>
+      <li><b>Autopilot.</b> Kari can send the list on WhatsApp on the 25th. It orders only on his "haan".</li>
+    </ul>
+    <p class="note">Try it: mark one item Kam, tap Ho gaya, then find the autopilot switch on the list.</p>
+  </div>
+  <div class="phs"><div><div class="ph sm" data-src="index.html?embed=1&lang=en&go=orders"></div><div class="cap">Tracking</div></div><div><div class="ph sm" data-src="index.html?embed=1&lang=en&go=check"></div><div class="cap">Maal mila lein</div></div></div>
+</div></section>
+
+<section class="s"><div class="split">
+  <div>
+    <div class="k">Live · simple first, bulk when it pays</div>
+    <h2>One number, one button. Thok bhav shows up only when it helps.</h2>
+    <ul style="margin-top:18px;max-width:620px">
+      <li><b>Home is one decision.</b> "Pichli baar jaisa", the total, and "Yahi order karein". Suggestions stay folded until he asks.</li>
+      <li><b>Last time bought.</b> Every row shows "pichli baar 6" and the date of the last order sits on top.</li>
+      <li><b>Slab pricing in plain words.</b> "4 aur lo, ₹10 kam har bori". When he crosses the slab the row says "Thok bhav laga".</li>
+      <li><b>Savings are visible.</b> The bar at the bottom switches from kamai to "thok bachat".</li>
+      <li><b>Same app, bigger numbers.</b> Imran's list is three times the size with a higher khata limit.</li>
+    </ul>
+    <p class="note">The phone shows Imran, whose volumes already unlock every slab. Switch to Ramesh in the full prototype to see the "4 aur lo" nudge on atta.</p>
+  </div>
+  <div><div class="ph" data-src="index.html?embed=1&lang=en&persona=imran&go=home"></div><div class="cap">Live · Imran, bulk buyer</div></div>
+</div></section>
+
+<section class="s">
+  <div class="k">Features from research</div>
+  <h2>Five additions, each traced to something real</h2>
+  <div class="g g3" style="margin-top:18px">
+    <div class="c"><span class="tag g">From Kirana Club itself</span><h3>Schemes applied for him</h3><p>The app already lists FMCG schemes and free gifts. Kari now checks his order and applies them, or says "1 more carton unlocks it".</p></div>
+    <div class="c"><span class="tag g">From Kirana Club itself</span><h3>Wallet cash, auto-used</h3><p>The live header shows a wallet balance. It now comes off the bill by itself, as its own line.</p></div>
+    <div class="c"><span class="tag g">From Kirana Club itself</span><h3>"Chadhega ya girega?"</h3><p>The store listing shows a mandi rate up-or-down prompt. We connect it to a price lock so an opinion becomes an action.</p></div>
+    <div class="c ai"><span class="tag">From the market</span><h3>Credit in minutes</h3><p>Flipkart Wholesale and Udaan both lead with fast credit for kiranas. Khata is our version, shaped like the distributor's ledger.</p></div>
+    <div class="c ai"><span class="tag">From the market</span><h3>A list built from three signals</h3><p>Redseer reports personalised assortments work when they mix past purchases, nearby shops and fast movers. Kari's suggestions use exactly those.</p></div>
+    <div class="c hot"><span class="tag o">Sources</span><p style="font-size:13px;line-height:1.7"><a class="src" href="https://kirana.club/" target="_blank" rel="noopener">kirana.club</a><br><a class="src" href="https://play.google.com/store/apps/details?id=club.kirana" target="_blank" rel="noopener">Play Store listing</a><br><a class="src" href="https://techradar.com/news/flipkart-wholesale-rolls-out-new-credit-programs-for-kiranas-and-retailers" target="_blank" rel="noopener">Flipkart Wholesale credit</a><br><a class="src" href="https://yourstory.com/2022/04/udaan-capital-northern-arc-credit-disbursal-small-retailers-kiranas-" target="_blank" rel="noopener">udaanCapital</a><br><a class="src" href="https://redseer.com/?p=89666" target="_blank" rel="noopener">Redseer on eB2B</a></p></div>
+  </div>
+  <div class="foot"><span>Restocking for Ramesh</span><span>Desk research only, viewed 25 November 2026</span></div>
+</section>
+
+<section class="s"><div class="split">
+  <div>
+    <div class="k">Later bets · shown as samples</div>
+    <h2>Four bets for later, once the loop is proven</h2>
+    <div class="g g2" style="margin-top:18px;max-width:680px">
+      <div class="c ai"><span class="tag">Mohalla pool</span><p>Nearby shops pool one item to reach a truckload rate. Small shops get Imran's price.</p></div>
+      <div class="c ai"><span class="tag">Bhav lock</span><p>When mandi rates are rising, Kari offers to hold today's price for 7 days.</p></div>
+      <div class="c ai"><span class="tag">Season pack</span><p>Kari picks the few items that move in the coming season. One tap adds them.</p></div>
+      <div class="c ai"><span class="tag">Missed-call order</span><p>No data, busy hands: give a missed call and Kari calls back to take the order.</p></div>
+    </div>
+    <p class="note" style="max-width:680px">All four are samples in the prototype. Each needs a business decision and real data before it is promised to anyone: pooled logistics, a price-risk policy, demand data, and a telephony line.</p>
+  </div>
+  <div><div class="ph" data-src="index.html?embed=1&lang=en&go=feed"></div><div class="cap">Live · the Mauke tab</div></div>
+</div></section>
+
+<section class="s"><div class="split">
+  <div>
+    <div class="k">Live · a new shop · Sunita</div>
+    <h2>A first order without a blank page</h2>
+    <div class="g g2" style="margin-top:18px;max-width:640px">
+      <div class="c"><div class="n">1</div><h3>Language</h3><p>English and Hindi, in Hindi script, are complete. Gujarati is listed as coming soon.</p></div>
+      <div class="c"><div class="n">2</div><h3>Number and shop</h3><p>OTP fills from the SMS. Only the shop name is asked; pincode comes from location.</p></div>
+      <div class="c ai"><div class="n">3</div><h3>A first list, three ways</h3><p>Talk to Kari, photograph a paper list, or take a starter list for a Kanpur kirana.</p></div>
+      <div class="c"><div class="n">4</div><h3>Cash or UPI first</h3><p>Khata unlocks from the second order, once there is a delivery record.</p></div>
+    </div>
+  </div>
+  <div class="phs"><div><div class="ph sm" data-src="index.html?embed=1&lang=en&mode=new"></div><div class="cap">Setup</div></div><div><div class="ph sm" data-src="index.html?embed=1&lang=en&mode=new&go=first"></div><div class="cap">First list</div></div></div>
+</div></section>
+
+<section class="s">
+  <div class="g" style="grid-template-columns:1fr auto auto;gap:40px;align-items:center;height:100%">
+    <div>
+      <div class="k">Live prototype</div>
+      <h2 style="margin-bottom:20px">Try both journeys right here</h2>
+      <div class="c" style="margin-bottom:14px"><h3>Ramesh, repeat order</h3><p>Tap the notification, apply a suggestion, call Kari, review, place the order on khata. Then open Order, step through delivery and check the goods.</p></div>
+      <div class="c" style="margin-bottom:18px"><h3>Sunita, a new shop</h3><p>Pick a language, enter any 10 digits, fill the code from SMS, name the shop, and build a first list by talking to Kari.</p></div>
+      <a class="btn" href="index.html" target="_blank" rel="noopener">Open the full prototype</a>
+      <p class="note">The full view opens with a 2 minute guided tour of 16 steps, and adds all three personas, a journey panel, a language switch and a restart button.</p>
+    </div>
+    <div><div class="ph" data-src="index.html?embed=1&lang=en&go=lock"></div><div class="cap">Ramesh · old user</div></div>
+    <div><div class="ph" data-src="index.html?embed=1&lang=en&mode=new"></div><div class="cap">Sunita · new user</div></div>
+  </div>
+</section>
+
+<section class="s">
+  <div class="k">Where it is better · screen by screen</div>
+  <h2>The same order, before and after</h2>
+  <table class="tight" style="margin-top:10px">
+    <tr><th>Moment</th><th>Current app</th><th>Redesign</th><th>Principle</th></tr>
+    <tr><td>A need mid-month</td><td>Remembered, or forgotten</td><td>Yaad List captures it in one tap or one sentence</td><td>Recognition over recall</td></tr>
+    <tr><td>Opening the app</td><td>Lands on the feed</td><td>Lands on what is due now, with one "Order this" button</td><td>One primary action</td></tr>
+    <tr><td>Finding an item</td><td>No search on the order page</td><td>Search, camera and voice in the violet header</td><td>Consistency</td></tr>
+    <tr><td>Choosing quantity</td><td>Add jumps to a brand page; quantity unclear</td><td>Stepper in place, due items prefilled, unit named</td><td>Recognition over recall</td></tr>
+    <tr><td>Knowing the deal</td><td>Offer pop-up replaces the cart button</td><td>Chips on the row: bulk price, scheme, price change</td><td>Visible status</td></tr>
+    <tr><td>Paying</td><td>Upfront payment, charges appear late</td><td>One bill with wallet, savings and three ways to pay</td><td>Numbers before words</td></tr>
+    <tr><td>After ordering</td><td>No ETA, nothing saved</td><td>ETA, 2 minute edit, WhatsApp copy, order saved as list</td><td>Forgiving by default</td></tr>
+    <tr><td>Receiving goods</td><td>No list to check against</td><td>Checklist or bill photo; short items refunded to khata</td><td>Visible status</td></tr>
+        <tr><td>Next time</td><td>Starts from nothing</td><td>Rhythm updated, Due Now basket ready</td><td>Progressive disclosure</td></tr>
+  </table>
+  <div class="foot"><span>Restocking for Ramesh</span><span>"Current app" column is from Manali's audit, not re-verified against the live app</span></div>
+</section>
+
+<section class="s">
+  <div class="k">Decisions</div>
+  <h2>Nine design decisions and what each one costs</h2>
+  <table class="tight" style="margin-top:8px">
+    <tr><th>Decision</th><th>Why</th><th>Trade-off</th></tr>
+    <tr><td>List first, catalogue second</td><td>He restocks mostly the same things.</td><td>New products sit further down the page.</td></tr>
+    <tr><td>Home is one number and one button</td><td>Ramesh has seconds at the counter, not minutes.</td><td>Suggestions and deals are one tap away, so fewer people see them.</td></tr>
+    <tr><td>Prefill only what is due</td><td>Items run out at different speeds; "same as last month" over-orders slow ones.</td><td>Needs 2 to 3 months of history. A new shop starts from area averages.</td></tr>
+    <tr><td>English and Hindi, both complete</td><td>Every screen is written in both; a new user picks on the first screen.</td><td>Our Hindi was written from a glossary. It needs a native writer's review before launch.</td></tr>
+    <tr><td>Kari as a call, not a chat tab</td><td>It mirrors the distributor call he trusts.</td><td>Covers the screen while open; noisy shops will stress voice.</td></tr>
+    <tr><td>Pictures confirm every item</td><td>Voice and handwriting can be misread.</td><td>One extra look per item added by Kari.</td></tr>
+    <tr><td>The app's own design language</td><td>A redesign should feel like Kirana Club, not a new product.</td><td>Less visual novelty; the craft is in clarity, not decoration.</td></tr>
+    <tr><td>Khata instead of wallets</td><td>Matches the month-end credit he already has.</td><td>Needs a lending partner and carries credit risk.</td></tr>
+    <tr><td>AI suggests, never decides</td><td>A wrong order costs him real money and trust.</td><td>Autopilot is slower than fully automatic ordering.</td></tr>
+  </table>
+  <div class="foot"><span>Restocking for Ramesh</span><span>An earlier dark look was dropped: it did not match the live app and risked legibility in daylight</span></div>
+</section>
+
+<section class="s">
+  <div class="k">Honesty check</div>
+  <h2>What in the prototype is real, and what is sample</h2>
+  <div class="g g3" style="margin-top:20px">
+    <div class="c"><span class="tag g">Real</span><h3>Works as shown</h3><ul><li>Full loop for all three personas</li><li>Due Now, Yaad List, bundles, budget, add to order</li><li>Kari's understanding of spoken-style Hindi lines</li><li>Khata arithmetic and credits</li><li>The 2 minute edit window</li><li>English and Hindi (Devanagari) throughout</li><li>Cart, explainers and Listen</li></ul></div>
+    <div class="c"><span class="tag a">Sample</span><h3>Looks real, data is made up</h3><ul><li>Prices, pack sizes, the ₹75,000 limit</li><li>Each item's reorder interval</li><li>The four suggestions and their reasons</li><li>Parchi, shelf and bill scan results</li><li>Mandi rates and delivery slots</li></ul></div>
+    <div class="c"><span class="tag r">Not done</span><h3>Still to build or test</h3><ul><li>Real microphone and spoken voice, untested</li><li>Gujarati copy, and a native review of the Hindi</li><li>Any retailer research</li><li>Images are open-licence, for the case study only</li></ul></div>
+  </div>
+  <div class="foot"><span>Restocking for Ramesh</span><span>State assumptions: the brief's own rule, applied to the prototype</span></div>
+</section>
+
+<section class="s">
+  <div class="k">Success metrics</div>
+  <h2>Definitions now, targets after a baseline</h2>
+  <div class="c hot" style="margin:16px 0"><span class="tag o">North star</span><p style="font-size:19px;color:var(--ink)">Share of active retailers who place their main restock in the app, starting from the Due Now basket.</p></div>
+  <div class="g g4">
+    <div class="c"><h3>Speed</h3><ul><li>Median time, app open to order placed</li><li>Taps per repeat order</li></ul></div>
+    <div class="c hot"><h3>The three core features</h3><ul><li><b>Yaad List:</b> order lines captured before order day</li><li><b>Due Now:</b> mid-month emergency orders per shop</li><li><b>Bundles:</b> orders with a bundle added</li></ul></div>
+    <div class="c ai"><h3>AI quality</h3><ul><li>Suggestions accepted versus declined</li><li>Voice items corrected after adding</li><li>Scan lines corrected</li></ul></div>
+    <div class="c"><h3>Guardrails</h3><ul><li>Order value per retailer holds</li><li>Cancellations and support calls do not rise</li><li>Khata dues paid on time</li></ul></div>
+  </div>
+  <div class="foot"><span>Restocking for Ramesh</span><span>No time saving is quoted. Nothing is measured yet; the pilot sets the baseline.</span></div>
+</section>
+
+<section class="s">
+  <div class="k">Validation plan · cheapest test first</div>
+  <h2>Four steps from assumption to evidence</h2>
+  <div class="g g4" style="margin-top:22px">
+    <div class="c"><span class="tag o">Week 1</span><h3>Talk to retailers</h3><p>8 to 10 shop visits. How the list is made, the restock rhythm, how they pay.</p><p class="note">Learn: monthly or weekly? Is the list really a repeat?</p></div>
+    <div class="c"><span class="tag o">Week 2</span><h3>Voice and photo test</h3><p>Retailers say a list aloud to a Kari mock and photograph their real parchi.</p><p class="note">Learn: how often an item is wrong.</p></div>
+    <div class="c"><span class="tag o">Week 3</span><h3>Click-through test</h3><p>This prototype, both journeys, unaided, on the retailer's own phone.</p><p class="note">Learn: can he finish a repeat order alone? Which language does he pick?</p></div>
+    <div class="c"><span class="tag o">Weeks 4 to 8</span><h3>One district pilot</h3><p>Real orders, prepared list and suggestions behind a flag.</p><p class="note">Learn: the baseline for every metric.</p></div>
+  </div>
+  <p class="note">Go or no-go after each step. A clear "weekly" answer in week 1 changes the reminder and the list before anything is built.</p>
+  <div class="foot"><span>Restocking for Ramesh</span><span>Proposed, not yet run</span></div>
+</section>
+
+<section class="s">
+  <div class="k">Risks</div>
+  <h2>What could go wrong, and the fallback</h2>
+  <div class="g g3" style="margin-top:20px">
+    <div class="c"><h3>A suggestion is wrong</h3><p>Every suggestion shows its reason and source, is never applied silently, and can be declined in one tap.</p></div>
+    <div class="c"><h3>Kari mishears or misreads</h3><p>Pictures confirm each item. Search and browse always work without Kari.</p></div>
+    <div class="c"><h3>The list goes stale</h3><p>Quantities are editable in place, and the list rebuilds from every order.</p></div>
+    <div class="c"><h3>Khata is not approved</h3><p>The flow still works with UPI and cash. Khata is one option on one screen.</p></div>
+    <div class="c"><h3>Breaking distributor trust</h3><p>Pilot with distributors already on the platform; do not replace the relationship in the flow.</p></div>
+    <div class="c hot"><span class="tag o">Needs a business decision</span><p>AI running cost, lending partner and limits, ETA data from logistics, storing order history as a list.</p></div>
+  </div>
+  <div class="foot"><span>Restocking for Ramesh</span><span>Still open: where the starter list comes from, what happens after the edit window</span></div>
+</section>
+
+<section class="s">
+  <div class="k">Roadmap · and what we cut</div>
+  <h2>Ship the loop first. Add each layer when its test passes.</h2>
+  <div class="g g3" style="margin-top:22px">
+    <div class="c hot"><span class="tag o">Now · MVP</span><h3>The loop, without AI risk</h3><ul><li>Due Now basket from order history</li><li>Yaad List by tap and text</li><li>My Bundles, one cart, slab price</li><li>ETA, 2-minute edit, Goods Check</li><li>Hindi and English, explainers</li></ul></div>
+    <div class="c ai"><span class="tag">Next · after pilot</span><h3>Kari</h3><ul><li>Kari Call for capture and ordering</li><li>Suggestions, double-check, Budget Mode</li><li>Khata with one lending partner</li><li>Parchi Scan, then Bill Scan</li><li>Add to Open Order, autopilot</li></ul></div>
+    <div class="c"><span class="tag g">Later · bets</span><h3>Only if the loop works</h3><ul><li>Mohalla Pool, Bhav Lock, Season Pack</li><li>Standing Order, Shared List</li><li>Missed-call ordering</li><li>Shelf Scan, regional languages</li></ul></div>
+  </div>
+  <p class="note"><b>Cut for now:</b> price comparison across distributors, returns, full stock tracking and a customer credit ledger. Each is a product of its own and none shortens the restock.</p>
+  <div class="foot"><span>Restocking for Ramesh</span><span>Order follows evidence, not ambition</span></div>
+</section>
+
+<section class="s"><div class="split">
+  <div>
+    <div class="k">Summary</div>
+    <h1 style="font-size:60px">Next time, what he needs is <span class="or">already there.</span></h1>
+    <div class="g g2" style="margin-top:30px;max-width:680px">
+      <div class="c"><h3>Today</h3><p>Memory, calls and trust. The app starts from nothing every time.</p></div>
+      <div class="c"><h3>The pain</h3><p>A long list rebuilt monthly, a large amount paid, no way to check what arrived.</p></div>
+      <div class="c ai"><h3>The new way</h3><p>A loop: capture, compose, confirm, check. Kari does the work, Ramesh makes the call.</p></div>
+      <div class="c hot"><h3>Next</h3><p>Talk to retailers, test voice and photos, settle the business questions.</p></div>
+    </div>
+  </div>
+  <div><div class="ph" data-src="index.html?embed=1&lang=en&go=next"></div><div class="cap">Next month, ready</div></div>
+</div></section>
+
+<section class="s">
+  <div class="k">Appendix · working notes by hand</div>
+  <h2>The raw thinking behind the deck</h2>
+  <div class="g g4" style="margin-top:16px">
+    <div><div class="img" style="height:150px"><img data-z src="notes/n_problem.webp" alt=""></div><div class="cap">Problem statement</div></div>
+    <div><div class="img" style="height:150px"><img data-z src="notes/n_constraints.webp" alt=""></div><div class="cap">Constraints</div></div>
+    <div><div class="img" style="height:150px"><img data-z src="notes/n_tradflow.webp" alt=""></div><div class="cap">Traditional flow, first sketch</div></div>
+    <div><div class="img" style="height:150px"><img data-z src="notes/n_notworking.webp" alt=""></div><div class="cap">What is not working</div></div>
+    <div><div class="img" style="height:190px"><img data-z src="notes/flow_kc.webp" alt=""></div><div class="cap">Current app, detailed audit</div></div>
+    <div><div class="img" style="height:190px"><img data-z src="notes/flow_ideal.webp" alt=""></div><div class="cap">Ideal flow</div></div>
+    <div><div class="img" style="height:190px"><img data-z src="notes/ia.webp" alt=""></div><div class="cap">Information architecture</div></div>
+    <div><div class="img" style="height:190px"><img data-z src="notes/sk_home.webp" alt=""></div><div class="cap">Lo-fi home sketch</div></div>
+  </div>
+  <div class="foot"><span>Restocking for Ramesh</span><span>Tap any note to zoom</span></div>
+</section>
+
+</div>
+<div id="nav"><button id="prev" aria-label="Previous">←</button><span id="cnt"></span><button id="next" aria-label="Next">→</button><a href="index.html" target="_blank" rel="noopener">Prototype</a></div>
+<div id="zoom"><img alt="" src="notes/n_problem.webp"></div>
+<script>
+var S=[].slice.call(document.querySelectorAll('.s')),cur=0;
+function fit(){var k=Math.min(innerWidth/1280,innerHeight/720),f=document.getElementById('fit');f.style.transform='translate(-50%,-50%) scale('+k+')';f.style.transformOrigin='center'}
+function go(n){
+  cur=Math.max(0,Math.min(S.length-1,n));
+  S.forEach(function(s,i){var on=i===cur;s.classList.toggle('on',on);
+    [].forEach.call(s.querySelectorAll('.ph'),function(p){
+      if(on&&!p.firstChild){p.innerHTML='<div class="w"><iframe title="Live prototype" src="'+p.dataset.src+'" allow="microphone"></iframe></div>'}
+      else if(!on&&p.firstChild){p.innerHTML=''}})});
+  document.getElementById('cnt').textContent=(cur+1)+' / '+S.length;
+  try{history.replaceState(null,'','#'+(cur+1))}catch(e){}
+}
+document.getElementById('prev').onclick=function(){go(cur-1)};
+document.getElementById('next').onclick=function(){go(cur+1)};
+addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' ')go(cur+1);else if(e.key==='ArrowLeft'||e.key==='PageUp')go(cur-1);else if(e.key==='Escape')document.getElementById('zoom').style.display='none'});
+addEventListener('resize',fit);
+document.addEventListener('click',function(e){var z=document.getElementById('zoom');if(e.target.closest('#zoom')){z.style.display='none';return}var i=e.target.closest('[data-z]');if(i){z.firstChild.src=i.src;z.style.display='grid'}});
+if(/[?&]print/.test(location.search)){document.body.classList.add('print');var only=+((location.search.match(/only=(\d+)/)||[])[1]||0);if(only)S.forEach(function(s,i){if(i!==only-1)s.remove()});document.documentElement.style.overflow='visible';document.documentElement.style.height='auto';document.body.style.height='auto';[].forEach.call(document.querySelectorAll('.ph'),function(p){p.innerHTML='<div class="w"><iframe title="Prototype screen" src="'+p.dataset.src+'"></iframe></div>'})}else{fit();go((parseInt(location.hash.slice(1))||1)-1)}
+S.forEach(function(s,i){if(!i)return;var f=s.querySelector('.foot');if(!f){f=document.createElement('div');f.className='foot';f.innerHTML='<span>Restocking for Ramesh</span><span></span>';s.appendChild(f)}f.firstElementChild.textContent='Restocking for Ramesh  ·  '+('0'+(i+1)).slice(-2)});
+document.addEventListener('click',function(e){var g=e.target.closest('[data-go]');if(g)go(+g.dataset.go-1)});
+</script>
+</body>
+</html>

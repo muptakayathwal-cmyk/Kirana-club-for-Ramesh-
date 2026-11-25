@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Restocking for Ramesh · live prototype v2</title>
+<meta name="description" content="Live prototype: restocking as a loop of capture, compose, confirm and check. A Kirana Club UI/UX case study by Manali Gupta.">
+<meta name="theme-color" content="#8B4DF0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Ramesh Restock">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://muptakayathwal-cmyk.github.io/kirana-club-for-ramesh-/">
+<meta property="og:title" content="Restocking for Ramesh · Kirana Club live prototype">
+<meta property="og:description" content="Restocking as a loop: capture, compose, confirm, check. Tap through it in English or Hindi.">
+<meta property="og:image" content="https://muptakayathwal-cmyk.github.io/kirana-club-for-ramesh-/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Kalam:wght@400;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap">
+<style>
+/* Kirana Club design language, read from the live app and site (Nov 2026):
+   red-orange brand, violet search header, lime price pill with dark outline, white cards, hard-edge buttons. */
+:root{
+  --or:#E04A26;--or-d:#B93A1B;--or-s:#FFEDE6;
+  --pu:#8B4DF0;--pu-d:#5B21B6;--pu-s:#F1E9FF;
+  --lime:#C8F169;--sky:#DFF2FB;
+  --gr:#1E8E3E;--gr-s:#E3F6E8;--rd:#D23B2A;--rd-s:#FDE8E4;--am:#9A6100;--am-s:#FFF1CF;
+  --ink:#17171C;--mut:#6C6C78;--line:#E4E4EA;--bg:#F5F4F1;--card:#FFFFFF;--card2:#F3F3F6;
+  --f:'Plus Jakarta Sans','Noto Sans Devanagari',system-ui,-apple-system,'Segoe UI',sans-serif;--fd:'Plus Jakarta Sans','Noto Sans Devanagari',system-ui,sans-serif;
+  --hard:0 2px 0 var(--ink);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{font:14px/1.4 var(--f);color:var(--ink);background:#14141A}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0;transition:transform .1s ease,background .15s ease,border-color .15s ease,box-shadow .1s ease}
+button:active{transform:translateY(1px)}
+input{font:inherit;color:inherit}
+.stage{min-height:100%;display:grid;grid-template-columns:minmax(240px,320px) 392px minmax(240px,320px);gap:40px;justify-content:center;align-items:center;padding:24px}
+.side{color:#E8E6EE;align-self:center;max-height:820px;overflow:auto;scrollbar-width:none}
+.side h1{font:800 26px/1.1 var(--f);margin:0 0 8px;letter-spacing:-.02em}
+.side h2{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#8A8799;margin:24px 0 10px;font-weight:800}
+.side p{color:#A5A2B2;margin:0 0 10px;font-size:13px}
+.jstep{display:flex;gap:12px;width:100%;text-align:left;padding:9px 10px;border-radius:12px;color:#C9C6D4;align-items:flex-start}
+.jstep:hover{background:#1D1D25}
+.jstep .n{flex:none;width:24px;height:24px;border-radius:50%;border:1.5px solid #3A3945;display:grid;place-items:center;font-size:11px;font-weight:800}
+.jstep b{display:block;font-size:13px;font-weight:700;color:#F3F1F8}
+.jstep span{font-size:12px;color:#8F8C9B}
+.jstep.on{background:#20202A}
+.jstep.on .n{background:var(--or);border-color:var(--or);color:#fff}
+.seg{display:flex;background:#1D1D25;border-radius:12px;padding:4px;gap:4px}
+.seg button{flex:1;padding:9px 6px;border-radius:9px;font-size:12.5px;font-weight:700;color:#A5A2B2}
+.seg button.on{background:#fff;color:var(--ink)}
+.sbtn{width:100%;padding:11px;border-radius:12px;border:1px solid #33323D;color:#E8E6EE;font-weight:700;font-size:13px;margin-top:8px}
+.sbtn:hover{background:#1D1D25}
+.chg{font-size:12.5px;color:#A5A2B2;padding:8px 0;border-top:1px solid #26262F}
+.chg b{color:#fff}
+.phone{width:392px;height:820px;background:#1B1B20;border-radius:48px;padding:9px;box-shadow:0 40px 100px rgba(0,0,0,.6),0 0 0 1px #33333C;position:relative}
+#app{width:100%;height:100%;background:var(--bg);border-radius:40px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+#app>.enter{animation:scr .24s ease}
+@keyframes scr{from{opacity:0;transform:translateY(8px)}}
+.scr{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+.scr::-webkit-scrollbar,.side::-webkit-scrollbar,.catbar::-webkit-scrollbar,.hs::-webkit-scrollbar,.sug::-webkit-scrollbar,.log::-webkit-scrollbar{display:none}
+@media(max-width:1040px){.stage{grid-template-columns:392px;gap:20px}.side{max-height:none}.phone{order:-1}}
+@media(max-width:480px){body{background:var(--bg)}.stage{display:flex;flex-direction:column;gap:0;padding:0}.phone{width:100%;height:100dvh;border-radius:0;padding:0;box-shadow:none;background:none}#app{border-radius:0}.side{padding:24px 18px;background:#14141A}}
+
+/* app chrome */
+.top{background:var(--pu);color:#fff;padding:16px 14px 14px}
+.top .who{display:flex;align-items:center;gap:10px}
+.top .ava{flex:none;width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid #fff}
+.top .hi{font-size:17px;font-weight:800;letter-spacing:-.01em;line-height:1.15}
+.top .sub{font-size:11.5px;opacity:.85;margin-top:2px}
+.top .wal{margin-left:auto;flex:none;background:#fff;color:var(--ink);font-weight:800;font-size:12px;padding:7px 10px;border-radius:9px;border:1.5px solid var(--ink);box-shadow:var(--hard)}
+.bar{display:flex;align-items:center;gap:12px;padding:16px 14px 12px;background:var(--bg);position:sticky;top:0;z-index:5}
+.bar h3{margin:0;font-size:18px;font-weight:800;flex:1;letter-spacing:-.01em}
+.back{width:38px;height:38px;border-radius:10px;background:#fff;border:1.5px solid var(--ink);box-shadow:var(--hard);display:grid;place-items:center}
+.tabs{display:flex;background:#fff;border-top:1px solid var(--line);padding:6px 6px 12px}
+.tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:700;color:var(--mut);padding:7px 0;position:relative}
+.tabs button.on{color:var(--or)}
+.tabs .dot{position:absolute;top:3px;right:27%;width:8px;height:8px;border-radius:50%;background:var(--or);box-shadow:0 0 0 2px #fff}
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.pad{padding:0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.h{font-size:16px;font-weight:800;margin:20px 14px 8px;display:flex;align-items:baseline;gap:8px;letter-spacing:-.01em}
+.h small{font-weight:600;color:var(--mut);font-size:12px}
+.cta{display:block;width:100%;background:var(--or);color:#fff;font-weight:800;font-size:16px;padding:15px;border-radius:12px;text-align:center;box-shadow:0 3px 0 var(--or-d)}
+.cta:active{box-shadow:0 1px 0 var(--or-d);transform:translateY(2px)}
+.cta.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--ink);box-shadow:var(--hard)}
+.cta.pu{background:var(--pu);box-shadow:0 3px 0 var(--pu-d)}
+.cta[disabled]{opacity:.4;box-shadow:none}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;padding:3px 8px;border-radius:6px}
+.chip.g{background:var(--gr-s);color:var(--gr)}.chip.r{background:var(--rd-s);color:var(--rd)}.chip.a{background:var(--am-s);color:var(--am)}.chip.p{background:var(--pu-s);color:var(--pu-d)}
+.mut{color:var(--mut)}.gr{color:var(--gr)}.b{font-weight:800}
+.pp{display:inline-block;background:var(--lime);border:1.5px solid var(--ink);border-radius:7px;padding:1px 7px;font-weight:800;font-size:13px;line-height:1.35}
+.mrp{color:#9A9AA5;font-size:11.5px;font-weight:600}
+
+/* list rows */
+.row{display:flex;gap:12px;padding:12px;align-items:center;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.art{flex:none;width:60px;height:60px;border-radius:10px;display:grid;place-items:center;background:#fff;overflow:hidden;border:1px solid var(--line)}
+.art img{width:100%;height:100%;object-fit:contain;padding:4px;display:block}
+.art.cv img{object-fit:cover;padding:0}
+.art svg{width:40px;height:40px}
+.art.off{filter:grayscale(1);opacity:.55}
+.row .mid{flex:1;min-width:0}
+.row .nm{font-weight:700;font-size:14.5px;line-height:1.25}
+.row .pk{font-size:12px;color:var(--mut);margin-top:2px}
+.row .pr{font-size:12.5px;margin-top:5px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.row .pr .mg{font-weight:800;font-size:12px}
+.stp{flex:none;display:flex;align-items:center;border-radius:9px;overflow:hidden;background:#fff;border:1.5px solid var(--ink);box-shadow:var(--hard)}
+.stp button{width:34px;height:38px;font-size:20px;font-weight:700;color:var(--or);display:grid;place-items:center}
+.stp b{min-width:22px;text-align:center;font-size:15px;font-weight:800}
+.addb{flex:none;color:var(--ink);font-weight:800;border-radius:9px;padding:9px 13px;font-size:13px;background:#fff;border:1.5px solid var(--ink);box-shadow:var(--hard)}
+.search{display:flex;align-items:center;gap:8px;background:#fff;border-radius:10px;padding:0 6px 0 12px;height:48px;margin-top:12px;color:var(--mut)}
+.search input{flex:1;border:0;outline:0;background:none;font-size:14px;min-width:0;color:var(--ink)}
+.search input::placeholder{color:#9A9AA5}
+.search button{width:38px;height:38px;border-radius:8px;background:var(--card2);color:var(--ink);display:grid;place-items:center}
+.search button+button{background:var(--pu-s);color:var(--pu-d)}
+.remind{margin:12px 14px 0;padding:16px;border-radius:14px;background:#fff;border:1.5px solid var(--ink);box-shadow:0 3px 0 var(--ink);display:flex;gap:12px;align-items:center;color:var(--ink)}
+.remind .big{font-size:32px;font-weight:800;line-height:1.05;letter-spacing:-.02em;margin:4px 0 4px}
+.catbar{display:flex;gap:8px;overflow-x:auto;padding:14px 14px 4px;scrollbar-width:none;position:sticky;top:0;background:var(--bg);z-index:4}
+.catbar button{flex:none;padding:8px 13px;border-radius:8px;background:#fff;border:1px solid var(--line);font-weight:700;font-size:12.5px;color:var(--ink)}
+.catbar button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.band{background:linear-gradient(90deg,var(--sky),#F4FBFF);margin:18px 0 10px;padding:10px 14px;display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px}
+.band small{font-weight:600;color:var(--mut);font-size:12px}
+.band a{margin-left:auto;color:var(--pu-d);font-weight:800;font-size:13px;text-decoration:underline}
+.hs{display:flex;gap:10px;overflow-x:auto;padding:0 14px 6px;scrollbar-width:none}
+.pc{flex:none;width:138px;padding:10px;border-radius:12px;background:#fff;border:1px solid var(--line)}
+.pc .art{width:100%;height:96px;margin-bottom:8px;border:0}
+.pc .nm{font-weight:700;font-size:13px;line-height:1.25;min-height:33px}
+.dock{background:#fff;border-top:1px solid var(--line);padding:10px 14px 12px;display:flex;align-items:center;gap:12px}
+.dock .t{flex:1;line-height:1.2}
+.dock .t b{font-size:20px;font-weight:800;display:block;letter-spacing:-.01em}
+.dock .t span{font-size:12px;color:var(--mut)}
+.dock .cta{width:auto;padding:14px 20px;font-size:15px}
+.fab{position:absolute;right:14px;z-index:8;background:var(--pu);color:#fff;font-weight:800;border-radius:99px;padding:9px 16px 9px 9px;display:flex;align-items:center;gap:9px;box-shadow:0 3px 0 var(--pu-d),0 10px 22px rgba(91,33,182,.35);font-size:13px}
+.fab i{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.22);display:grid;place-items:center}
+.fab svg{width:16px;height:16px}
+.toast{position:absolute;left:50%;transform:translateX(-50%);top:12px;background:var(--ink);color:#fff;padding:11px 16px;border-radius:10px;font-weight:700;font-size:12.5px;z-index:30;white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis;animation:pop .25s ease;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+@keyframes pop{from{opacity:0;transform:translate(-50%,-12px)}}
+
+/* onboarding + lock */
+.lock{flex:1;position:relative;color:#fff;display:flex;flex-direction:column;padding:64px 16px 24px;background:#000 center/cover}
+.lock::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,6,14,.35),rgba(8,6,14,.55) 45%,rgba(8,6,14,.92))}
+.lock>*{position:relative}
+.lock .time{font-size:74px;font-weight:700;line-height:1;text-align:center;letter-spacing:-.03em}
+.lock .date{text-align:center;opacity:.85;margin:6px 0 40px;font-weight:600}
+.notif{background:rgba(250,250,252,.94);border-radius:18px;padding:14px;text-align:left;width:100%;color:var(--ink);animation:pop2 .5s ease}
+@keyframes pop2{from{opacity:0;transform:translateY(-14px)}}
+.notif .app{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mut);font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+.notif .lg{width:22px;height:22px;border-radius:6px;background:var(--or);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800}
+.notif b{display:block;font-size:15.5px;margin:10px 0 3px}
+.notif p{margin:0;font-size:13.5px;color:#3D3D47}
+.notif .go{margin-top:14px;background:var(--or);color:#fff;font-weight:800;border-radius:10px;padding:12px;text-align:center;box-shadow:0 3px 0 var(--or-d)}
+.ob{flex:1;display:flex;flex-direction:column;padding:26px 18px 20px;background:#fff;overflow:auto;scrollbar-width:none}
+.ob .hero{height:140px;border-radius:14px;background:#ddd center/cover;margin-bottom:20px;flex:none;border:1.5px solid var(--ink)}
+.ob .stepdots{display:flex;gap:6px;margin-bottom:22px}
+.ob .stepdots i{height:4px;flex:1;border-radius:4px;background:var(--line)}
+.ob .stepdots i.on{background:var(--or)}
+.ob h2{font-size:25px;line-height:1.15;margin:0 0 8px;font-weight:800;letter-spacing:-.02em}
+.ob p{color:var(--mut);margin:0 0 20px;font-size:14px}
+.opt{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:14px;border-radius:12px;border:1.5px solid var(--line);margin-bottom:10px;background:#fff}
+.opt.on{border-color:var(--ink);background:var(--or-s);box-shadow:var(--hard)}
+.opt b{display:block;font-size:15.5px}
+.opt span{font-size:12.5px;color:var(--mut)}
+.opt .ic{flex:none;width:44px;height:44px;border-radius:10px;background:var(--pu-s);color:var(--pu-d);display:grid;place-items:center;font-weight:800;font-size:16px}
+.fld{width:100%;border:1.5px solid var(--ink);background:#fff;border-radius:12px;padding:15px;font-size:17px;font-weight:700;outline:0;margin-bottom:12px;color:var(--ink)}
+.fld::placeholder{color:#B4B4BE}
+.fld:focus{box-shadow:0 0 0 3px var(--pu-s)}
+.grow{flex:1}
+
+/* call */
+.call{flex:1;background:linear-gradient(180deg,#7C3AED,#3B1A86 55%,#1B103D);color:#fff;display:flex;flex-direction:column;min-height:0}
+.call .hd{text-align:center;padding:26px 16px 10px}
+.call .av{width:74px;height:74px;border-radius:50%;margin:0 auto 12px;background:#fff;display:grid;place-items:center;position:relative}
+.call .av::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid rgba(255,255,255,.35);animation:ring 1.6s ease-out infinite}
+.call .av.lis::after{border-color:var(--lime);animation-duration:.8s}
+@keyframes ring{from{transform:scale(.9);opacity:1}to{transform:scale(1.3);opacity:0}}
+.call .av span{width:62px;height:62px;border-radius:50%;background:var(--or);color:#fff;display:grid;place-items:center;font-size:24px;font-weight:800}
+.call .hd .nm{font-size:20px;font-weight:800}
+.call .hd .st{font-size:12px;opacity:.8;margin-top:2px}
+.log{flex:1;overflow-y:auto;padding:8px 14px;display:flex;flex-direction:column;gap:8px;scrollbar-width:none;min-height:0}
+.bub{max-width:86%;padding:10px 13px;border-radius:14px;font-size:14px;line-height:1.38}
+.log>:last-child{animation:pop2 .25s ease}
+.bub.k{background:rgba(255,255,255,.16);align-self:flex-start;border-bottom-left-radius:4px}
+.bub.u{background:#fff;color:var(--ink);align-self:flex-end;border-bottom-right-radius:4px;font-weight:600}
+.slip{align-self:stretch;background:#fff;color:var(--ink);border-radius:14px;padding:4px 0;border:1.5px solid var(--ink)}
+.slip .row{padding:9px 12px}
+.slip .art{width:44px;height:44px;border-radius:8px}.slip .art svg{width:30px;height:30px}
+.slip .stp button{height:32px;width:30px}
+.slip .cap{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--pu-d);padding:10px 12px 2px}
+.sug{display:flex;gap:8px;overflow-x:auto;padding:8px 14px;scrollbar-width:none}
+.sug button{flex:none;padding:9px 13px;border-radius:9px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);font-size:12.5px;font-weight:600;color:#fff}
+.cin{display:flex;gap:8px;padding:4px 14px 10px}
+.cin input{flex:1;min-width:0;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:12px;color:#fff;outline:0}
+.cin input::placeholder{color:rgba(255,255,255,.55)}
+.cin button{width:46px;border-radius:10px;background:#fff;color:var(--pu-d);display:grid;place-items:center}
+.cbtns{display:flex;justify-content:space-around;align-items:center;padding:6px 20px 24px}
+.cb{display:flex;flex-direction:column;align-items:center;gap:7px;font-size:11.5px;font-weight:700;color:#fff}
+.cb i{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.16);display:grid;place-items:center}
+.cb.on i{background:#fff;color:var(--pu-d)}
+.cb.mic i{width:68px;height:68px;background:var(--lime);color:var(--ink)}
+.cb.mic.on i{background:#fff}
+.cb.end i{background:var(--rd)}
+
+/* review, orders */
+.sum{display:flex;justify-content:space-between;padding:12px 14px;border-top:1px solid var(--line);font-size:14px}
+.sum:first-child{border-top:0}
+.pay{display:flex;gap:12px;align-items:center;padding:14px;border-radius:12px;border:1.5px solid var(--line);background:#fff;margin-bottom:8px;width:100%;text-align:left}
+.pay.on{border-color:var(--ink);background:var(--or-s);box-shadow:var(--hard)}
+.pay .rd{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid #B4B4BE;display:grid;place-items:center}
+.pay.on .rd{border-color:var(--or)}.pay.on .rd::after{content:"";width:11px;height:11px;border-radius:50%;background:var(--or)}
+.pay b{display:block;font-size:14.5px}.pay span{font-size:12px;color:var(--mut)}
+.pay[disabled]{opacity:.45}
+.ok{width:88px;height:88px;border-radius:50%;background:var(--lime);border:2px solid var(--ink);box-shadow:0 4px 0 var(--ink);display:grid;place-items:center;margin:38px auto 18px;color:var(--ink);animation:okp .5s cubic-bezier(.2,.9,.3,1.4)}
+@keyframes okp{from{opacity:0;transform:scale(.4)}}
+.ok svg{width:42px;height:42px;stroke-width:3}
+.ttl{font-size:25px;font-weight:800;line-height:1.1;letter-spacing:-.02em}
+.wa{background:#E2F8D4;border:1px solid #BFE6A6;border-radius:4px 14px 14px 14px;padding:11px 13px;font-size:13px;line-height:1.45;color:#16321A}
+.track{display:flex;gap:12px;padding:0 14px 0}
+.track .ln{display:flex;flex-direction:column;align-items:center}
+.track .d{width:18px;height:18px;border-radius:50%;border:2px solid #C9C9D2;background:#fff;flex:none}
+.track .d.on{background:var(--gr);border-color:var(--gr)}
+.track .v{width:2px;flex:1;background:#DADAE2;min-height:24px}
+.track .v.on{background:var(--gr)}
+.track .tx{padding-bottom:18px;font-weight:700;font-size:14px}
+.track .tx.off{color:#A5A5B0;font-weight:600}
+.track .tx small{display:block;font-weight:500;color:var(--mut);font-size:12px}
+.tri{display:flex;gap:4px;flex:none}
+.tri button{padding:7px 9px;border-radius:8px;font-size:11.5px;font-weight:800;background:#fff;color:var(--mut);border:1.5px solid var(--line)}
+.tri button.ok1{background:var(--gr);border-color:var(--gr);color:#fff}
+.tri button.bad{background:var(--rd);border-color:var(--rd);color:#fff}
+.note{font-size:11.5px;color:var(--mut);background:var(--card2);border-radius:8px;padding:8px 10px;margin-top:8px}
+.kh{margin:4px 14px 0;padding:20px 18px;border-radius:14px;background:var(--pu);color:#fff;border:1.5px solid var(--ink);box-shadow:0 3px 0 var(--ink)}
+.kh .lb{font-size:10.5px;font-weight:800;letter-spacing:.14em;opacity:.85}
+.kh .amt{font-size:40px;font-weight:800;line-height:1;letter-spacing:-.02em;margin:10px 0 6px}
+.kh .sub{font-size:12.5px;opacity:.9}
+.meter{height:8px;border-radius:8px;background:rgba(0,0,0,.14);overflow:hidden;margin-top:14px}
+.meter i{display:block;height:100%;background:var(--lime);border-radius:8px}
+table.m{width:100%;border-collapse:collapse;font-size:13.5px}
+table.m td{padding:12px 14px;border-top:1px solid var(--line)}
+table.m tr:first-child td{border-top:0}
+.ai{margin:12px 14px 0;border-radius:14px;background:var(--pu-s);border:1.5px solid #CDB6FF;overflow:hidden}
+.ai .hd{display:flex;align-items:center;gap:8px;padding:12px 14px 8px;font-weight:800;color:var(--pu-d);font-size:14px}
+.ai .hd svg{width:18px;height:18px;fill:var(--pu);stroke:none}
+.ai .hd button{margin-left:auto;font-size:12.5px;font-weight:800;color:var(--pu-d);text-decoration:underline}
+.ai .row{border-top-color:#DCCBFF}
+.sg{padding:11px 14px 13px;border-top:1px solid #DCCBFF;background:#FBF8FF}
+.sg.f{display:flex;gap:12px;align-items:flex-start}
+.sg.f .art{width:46px;height:46px;border-radius:8px}
+.sg p{margin:6px 0 9px;font-size:13px;line-height:1.42;color:#2A2A33}
+.sg .bt{display:flex;gap:8px}
+.sg .bt button{padding:8px 14px;border-radius:9px;font-weight:800;font-size:12.5px}
+.sg .yes{background:#fff;color:var(--ink);border:1.5px solid var(--ink);box-shadow:var(--hard)}.sg .no{background:none;color:var(--mut);text-decoration:underline}
+.tog{flex:none;width:48px;height:28px;border-radius:99px;background:#C9C9D2;position:relative}
+.tog::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.2s}
+.tog.on{background:var(--gr)}.tog.on::after{left:23px}
+.cam{flex:1;background:#0B0B0F;color:#fff;display:flex;flex-direction:column;min-height:0}
+.cam .bar{background:none}
+.cam .bar .back{color:var(--ink)}
+.cam .seg{margin:0 18px 6px}
+.cam .vf{flex:1;margin:8px 18px;border-radius:18px;background:#3B2A1C center/cover;position:relative;overflow:hidden;display:grid;place-items:center;min-height:0}
+.cam .vf.wood{background:repeating-linear-gradient(92deg,#5A3D26 0 38px,#523721 38px 40px,#60422A 40px 90px)}
+.scanl{position:absolute;left:0;right:0;height:3px;background:var(--lime);box-shadow:0 0 22px 8px rgba(200,241,105,.5);animation:sc 1.6s ease-in-out infinite}
+@keyframes sc{0%{top:6%}50%{top:92%}100%{top:6%}}
+.det{position:absolute;border:2px dashed #FF7A6B;border-radius:8px;background:rgba(255,122,107,.16);animation:pop2 .4s ease}
+.det b{position:absolute;left:-2px;top:-22px;background:#FF7A6B;color:#2B0A06;font-size:10px;padding:2px 7px;border-radius:5px;white-space:nowrap}
+.paper{width:214px;background:#FFFBEA;color:#23307A;font:700 20px/1.7 'Kalam',cursive;padding:16px 20px;transform:rotate(-3deg);border-radius:4px;box-shadow:0 18px 40px rgba(0,0,0,.55)}
+.paper.bill{font:600 11.5px/1.9 var(--f);color:#333;transform:rotate(2deg);background:#fff}
+.paper.bill b{display:block;font-size:14px;border-bottom:1px dashed #999;margin-bottom:4px}
+.shut{display:block;width:72px;height:72px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px #0B0B0F,0 0 0 7px rgba(255,255,255,.55);margin:0 auto}
+.pick{flex:1;border:1.5px solid var(--line);border-radius:12px;padding:12px 10px;text-align:center;font-weight:700;font-size:13px;background:#fff}
+.pick.on{border-color:var(--ink);background:var(--pu-s);box-shadow:var(--hard)}.pick .art{margin:0 auto 8px}
+body.embed *{animation:none!important}body.embed .shade{background:transparent}body.embed .sheet{border:1.5px solid var(--ink);border-bottom:0}body.embed .fab{box-shadow:0 3px 0 var(--pu-d)}body.embed .paper,body.embed .toast{box-shadow:none}
+body.embed{background:var(--bg)}body.embed .side{display:none}body.embed .stage{display:block;padding:0;min-height:0;height:100%}body.embed .phone{width:100%;height:100vh;border-radius:0;padding:0;box-shadow:none;background:none}body.embed #app{border-radius:0}
+#app.hi{line-height:1.55}#app.hi *{letter-spacing:0!important}#app.hi .row .nm{font-size:15.5px}#app.hi .row .pk,#app.hi .mrp{font-size:12.5px}#app.hi .chip{font-size:12px}
+.qm{width:22px;height:22px;border-radius:50%;border:1.5px solid currentColor;font-weight:800;font-size:12px;display:inline-grid;place-items:center;flex:none;opacity:.75;vertical-align:middle;margin-left:6px;line-height:1}
+.legend{margin:10px 14px 0;font-size:12.5px;color:var(--mut);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.shade{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:40;animation:fd .2s ease}
+@keyframes fd{from{opacity:0}}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:41;background:#fff;border-radius:20px 20px 0 0;padding:22px 18px 24px;border-top:1.5px solid var(--ink);animation:up .24s ease}
+@keyframes up{from{transform:translateY(100%)}}
+.sheet h4{margin:0 0 8px;font-size:20px;font-weight:800}
+.sheet p{margin:0 0 18px;font-size:15.5px;line-height:1.55;color:#2A2A33}
+.sheet .bt{display:flex;gap:10px}
+.cartb{position:relative;margin-left:8px}
+.cartb svg{width:18px;height:18px;display:block}
+.cartb i{position:absolute;top:-8px;right:-8px;min-width:18px;height:18px;border-radius:9px;background:var(--or);color:#fff;font:800 11px/18px var(--f);text-align:center;font-style:normal;padding:0 4px}
+.hist{color:var(--pu-d);font-weight:800;margin-left:2px}
+.pc.bn{width:190px}.pc.bn .art{width:44px;height:44px;margin:0 -10px 0 0;border:1.5px solid #fff;box-shadow:0 0 0 1px var(--line);border-radius:10px}
+.sheet .card .sum{font-size:13.5px;padding:10px 12px}
+.savebar{background:var(--gr-s);border-top:1px solid #BFE6C9;padding:9px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12.5px;font-weight:700;color:#14532D}
+.savebar b{font-weight:800;font-size:13.5px}
+.savebar span{display:block;font-weight:600;font-size:11.5px;opacity:.85}
+.tour{background:#fff;color:var(--ink);border-radius:14px;padding:14px;margin:12px 0 6px;border:2px solid var(--or);box-shadow:0 4px 0 var(--or-d)}
+.tour small{font-weight:800;color:var(--or);letter-spacing:.1em;font-size:10.5px}
+.tour b{display:block;font-size:16px;margin:4px 0;color:var(--ink)}
+.side .tour p{color:#3D3D47;font-size:13px;margin:0 0 12px}
+.tour div{display:flex;gap:6px}
+.tour button{padding:9px 12px;border-radius:9px;font-weight:800;font-size:12.5px;border:1.5px solid var(--ink);background:#fff;color:var(--ink)}
+.tour .nx{background:var(--or);color:#fff;border-color:var(--or);flex:1}
+.tour button[disabled]{opacity:.35}
+.tourb{width:100%;background:var(--or);color:#fff;font-weight:800;border-radius:12px;padding:13px;margin:10px 0 4px;box-shadow:0 3px 0 var(--or-d);font-size:14px}
+.spot{outline:3px solid var(--or)!important;outline-offset:3px;animation:spt 1.3s ease-in-out infinite}
+@keyframes spt{50%{outline-offset:7px}}
+#welcome{position:fixed;inset:0;background:rgba(10,10,14,.78);z-index:100;display:grid;place-items:center;padding:20px}
+#welcome .bx{background:#fff;color:var(--ink);border-radius:18px;padding:28px;max-width:460px;border:2px solid var(--ink);box-shadow:0 6px 0 var(--or)}
+#welcome small{font-weight:800;color:var(--or);letter-spacing:.12em;font-size:11px}
+#welcome h2{font-size:30px;font-weight:800;letter-spacing:-.02em;margin:6px 0 10px}
+#welcome p{color:#3D3D47;margin:0 0 12px;font-size:15px}
+#welcome ul{margin:0 0 20px;padding:0;list-style:none}
+#welcome li{padding:8px 0;border-top:1px solid var(--line);font-size:14px;color:#3D3D47}
+#welcome .go{display:block;width:100%;background:var(--or);color:#fff;font-weight:800;font-size:16px;padding:15px;border-radius:12px;box-shadow:0 3px 0 var(--or-d)}
+#welcome .sk{display:block;width:100%;margin-top:12px;font-weight:700;color:var(--mut);text-decoration:underline;font-size:13.5px}
+</style>
+</head>
+<body>
+<div class="stage">
+  <aside class="side" id="journey"></aside>
+  <div class="phone"><div id="app"></div></div>
+  <aside class="side" id="ctrl"></aside>
+</div>
+<script>
+/* ---------- data ---------- */
+var CATS=[{k:'a',h:'Atta, Dal, Chawal',e:'Flour, pulses, rice'},{k:'b',h:'Tel, Masale',e:'Oil, spices'},{k:'c',h:'Chai, Nashta',e:'Tea, snacks'},{k:'d',h:'Sabun, Safai',e:'Soap, cleaning'}];
+/* u = selling unit, pk = what one unit holds, price = what Ramesh pays per unit, mrp = what that unit sells for */
+var P=[
+ {id:1,n:'Aashirvaad Atta',pk:'10 kg',u:'bori',price:415,mrp:470,last:6,cat:'a',sh:'sack',c:'#E8A33D',kw:['atta','aata','aatta','flour','आटा']},
+ {id:2,n:'Chini',en:'Sugar',pk:'50 kg',u:'bori',price:2150,mrp:2400,last:2,cat:'a',sh:'sack',c:'#7FA6D9',kw:['chini','cheeni','sugar','shakkar','चीनी']},
+ {id:3,n:'Toor Dal',pk:'30 kg',u:'bori',price:3900,mrp:4500,last:1,cat:'a',sh:'sack',c:'#D9A521',kw:['toor','arhar','tuar','dal','daal','दाल'],delta:150},
+ {id:4,n:'Moong Dal',pk:'30 kg',u:'bori',price:3300,mrp:3750,last:1,cat:'a',sh:'sack',c:'#8DB04A',kw:['moong','mung','मूंग']},
+ {id:5,n:'Sona Masoori Chawal',en:'Sona Masoori Rice',pk:'26 kg',u:'bori',price:1380,mrp:1560,last:3,cat:'a',sh:'sack',c:'#3F9A6B',kw:['chawal','chaawal','rice','chaval','चावल']},
+ {id:6,n:'Rajdhani Besan',pk:'1 kg × 20',u:'peti',price:1700,mrp:1900,last:1,cat:'a',sh:'pouch',c:'#E0B64A',kw:['besan','बेसन']},
+ {id:7,n:'Tata Sampann Poha',pk:'1 kg × 20',u:'peti',price:900,mrp:1100,last:1,cat:'a',sh:'pouch',c:'#C9B79A',kw:['poha','chivda','पोहा']},
+ {id:8,n:'Fortune Sunflower Tel',en:'Fortune Sunflower Oil',pk:'1 L × 12',u:'peti',price:1560,mrp:1740,last:3,cat:'b',sh:'bottle',c:'#F0B429',kw:['sunflower','refined','tel','oil','तेल'],delta:-40},
+ {id:9,n:'Fortune Sarson Tel',en:'Fortune Mustard Oil',pk:'1 L × 12',u:'peti',price:1740,mrp:1920,last:2,cat:'b',sh:'bottle',c:'#C98A12',kw:['sarson','mustard','kachi','सरसों']},
+ {id:10,n:'Tata Namak',en:'Tata Salt',pk:'1 kg × 25',u:'peti',price:600,mrp:700,last:2,cat:'b',sh:'pouch',c:'#4E7FD1',kw:['namak','salt','नमक']},
+ {id:11,n:'Everest Haldi',pk:'100 g × 40',u:'peti',price:1240,mrp:1440,last:1,cat:'b',sh:'box',c:'#E3A008',kw:['haldi','turmeric','हल्दी']},
+ {id:12,n:'Everest Lal Mirch',pk:'100 g × 40',u:'peti',price:1480,mrp:1720,last:1,cat:'b',sh:'box',c:'#D2452F',kw:['mirch','mirchi','chilli','मिर्च']},
+ {id:13,n:'Tata Tea Gold',pk:'250 g × 24',u:'peti',price:3360,mrp:3840,last:1,cat:'c',sh:'box',c:'#B8322A',kw:['teagold','gold'],oos:true,alt:14},
+ {id:14,n:'Red Label Chai',pk:'250 g × 24',u:'peti',price:3120,mrp:3600,last:1,cat:'c',sh:'box',c:'#C81E3A',kw:['redlabel','chai','chaipatti','tea','चाय']},
+ {id:15,n:'Maggi Noodles',pk:'70 g × 96',u:'carton',price:1250,mrp:1440,last:2,cat:'c',sh:'box',c:'#F2C200',kw:['maggi','noodles','मैगी']},
+ {id:16,n:'Parle-G',pk:'₹5 pack × 120',u:'carton',price:520,mrp:600,last:4,cat:'c',sh:'box',c:'#E9B949',kw:['parle','parleg','biscuit','biskut','बिस्कुट']},
+ {id:17,n:'Kurkure',pk:'₹10 pack × 60',u:'carton',price:510,mrp:600,last:2,cat:'c',sh:'pouch',c:'#E96A1F',kw:['kurkure','namkeen']},
+ {id:18,n:'Surf Excel',pk:'1 kg × 12',u:'peti',price:1620,mrp:1800,last:1,cat:'d',sh:'box',c:'#2E6FD8',kw:['surf','surfexcel','detergent']},
+ {id:19,n:'Vim Bar',pk:'₹10 bar × 48',u:'carton',price:420,mrp:480,last:2,cat:'d',sh:'bar',c:'#5DB73B',kw:['vim','bartan']},
+ {id:20,n:'Lifebuoy Sabun',en:'Lifebuoy Soap',pk:'100 g × 48',u:'carton',price:1500,mrp:1680,last:1,cat:'d',sh:'bar',c:'#D7333C',kw:['lifebuoy','sabun','soap','साबुन']},
+ {id:21,n:'Colgate',pk:'100 g × 24',u:'peti',price:1330,mrp:1560,last:1,cat:'d',sh:'box',c:'#D8232A',kw:['colgate','toothpaste','manjan']},
+ {id:22,n:'Cycle Agarbatti',pk:'₹10 pack × 60',u:'peti',price:480,mrp:600,last:1,cat:'d',sh:'box',c:'#7B4BC9',kw:['agarbatti','cycle']},
+ {id:23,n:'Nutrela Soya Chunks',pk:'200 g × 24',u:'peti',price:980,mrp:1200,last:0,cat:'a',sh:'pouch',c:'#8A5A3C',kw:['soya','nutrela']},
+ {id:24,n:'Good Day',pk:'₹10 pack × 72',u:'carton',price:610,mrp:720,last:0,cat:'c',sh:'box',c:'#C9862B',kw:['goodday','good']},
+ {id:25,n:'Clinic Plus Sachet',pk:'₹1 × 960',u:'carton',price:800,mrp:960,last:0,cat:'d',sh:'pouch',c:'#2B5FB8',kw:['clinic','shampoo']},
+ {id:26,n:'Bournvita',pk:'500 g × 12',u:'peti',price:2640,mrp:3000,last:0,cat:'c',sh:'box',c:'#7A3B1D',kw:['bournvita']}
+];
+var SUG=[
+ {k:'s1',pid:16,to:5,src:['Aapke order se','From your orders'],h:'Parle-G pichle 3 mahine mein beech mein dobara mangwana pada. 4 ki jagah 5 carton rakhein.',e:'You had to reorder Parle-G mid-month three months running. Take 5 cartons instead of 4.'},
+ {k:'s2',pid:8,to:4,src:['Aaj ke bhav se','From today\'s prices'],h:'Sunflower tel ₹40 sasta hua hai. 1 peti zyada lene par ₹180 extra kamai.',e:'Sunflower oil is ₹40 cheaper. One extra case earns ₹180 more.'},
+ {k:'s3',pid:2,to:3,src:['Season se','From the season'],h:'Shaadi ka season aa raha hai. December mein chini ki maang badhti hai. 2 ki jagah 3 bori.',e:'Wedding season is coming and sugar demand rises in December. Take 3 sacks instead of 2.'},
+ {k:'s4',pid:23,to:1,src:['Ilaake ke trend se','From shops near you'],h:'Aapke ilaake ki dukaanein Soya Chunks lene lagi hain. 1 peti try karein?',e:'Shops near you have started stocking Soya Chunks. Try 1 case?'}];
+var PAR=[[1,5],[2,2],[8,3],[10,2],[15,1]],SHELF=[[10,'Sirf 2 packet bache','Only 2 packs left'],[15,'Khaali ho gaya','Empty'],[19,'1 hi bacha','Only 1 left']];
+function sugOpen(){return S.persona!=='ramesh'?[]:SUG.filter(function(s){return !S.sug[s.k]&&q(s.pid)!==s.to})}
+function applySug(s){S.cart[s.pid]=s.to;if(S.list.indexOf(s.pid)<0)S.list.push(s.pid);S.sug[s.k]='on'}
+function sugText(s){return L(s.h,s.e)}
+function missing(){return S.mode==='old'?P.filter(function(p){return p.last0>0&&!p.oos&&band(p)==='now'&&!q(p.id)}):[]}
+var STARTER=[1,2,5,8,10,14,15,16,18,20];
+var PHRASES={'sarson tel':'sarson','sarson ka tel':'sarson','mustard oil':'sarson','moong dal':'moong','moong daal':'moong','toor dal':'toor','toor daal':'toor','arhar dal':'toor','red label':'redlabel','tea gold':'teagold','sunflower tel':'sunflower','sunflower oil':'sunflower','surf excel':'surf','vim bar':'vim','parle g':'parle','parle-g':'parle','good day':'goodday','lal mirch':'mirch'};
+var NUM={ek:1,one:1,'एक':1,do:2,two:2,'दो':2,teen:3,three:3,'तीन':3,char:4,chaar:4,four:4,'चार':4,paanch:5,panch:5,five:5,'पांच':5,'पाँच':5,chhe:6,che:6,chah:6,six:6,'छह':6,saat:7,seven:7,'सात':7,aath:8,eight:8,'आठ':8,nau:9,nine:9,'नौ':9,das:10,ten:10,'दस':10};
+var UNITW=['peti','bori','carton','packet','dabba','case','sack','katta','पेटी','बोरी'];
+
+/* ---------- state ---------- */
+var S;
+function fresh(mode,persona){
+  persona=persona||(mode==='new'?'sunita':'ramesh');var mult=persona==='imran'?3:1;
+  P.forEach(function(p){if(p.base===undefined)p.base=p.last;p.last=p.last0=p.base*mult;var r=RH0[p.id]||[0,0];p.ev=r[0];p.ago=r[1]});
+  var pt=0;P.forEach(function(p){if(!p.oos)pt+=p.last*p.price});
+  S={lang:(S&&S.lang)||'en',mode:mode,persona:persona,screen:mode==='new'?'lang':'lock',cart:{},list:[],order:null,past:[],cat:'all',q:'',pay:mode==='new'?'cod':'khata',slot:0,
+     khata:{limit:75000*mult,used:0,log:[{t:'31 Oct',h:'October ka hisaab chukta',e:'October dues cleared',a:-pt}]},shop:persona==='imran'?'Imran Traders':persona==='ramesh'?'Ramesh Kirana Store':'',phone:'',sound:true,call:null,done:false,sug:{},auto:false,scan:null,mult:mult,run:persona==='sunita'?[]:[{id:23,w:'ask',d:7},{id:26,w:'voice',d:4}],lost:{23:2},myb:[],trim:[],wallet:mode==='new'?50:120,obLang:'en',shopType:'kirana'};
+  if(mode==='old'){S.list=P.filter(function(p){return p.last>0}).map(function(p){return p.id});prefill();
+    S.past=[{id:'KC-1117',date:'17 Nov',total:2280*mult,n:3},{id:'KC-1027',date:'27 Oct',total:pt,n:22}]}
+}
+function NM(){var h=S.lang!=='en';return S.persona==='imran'?(h?'इमरान भाई':'Imran bhai'):S.persona==='sunita'?(S.shop||(h?'जी':'ji')):(h?'रमेश भाई':'Ramesh bhai')}
+var SLAB={1:[10,10],2:[4,50],5:[5,40],8:[5,30],15:[4,40],16:[6,20]};
+var SCH={15:[3,'3 carton par 6 packet free','Buy 3 cartons, get 6 packs free'],20:[2,'2 carton par 4 sabun free','Buy 2 cartons, get 4 soaps free'],18:[2,'2 peti par ₹60 ka coupon','Buy 2 cases, get a ₹60 coupon']};
+function schHtml(){var h='';for(var k in SCH){var p=by(+k),s=SCH[k],n=q(p.id);if(!n)continue;h+='<div class="sg"><p style="margin-top:0"><b>'+nm(p)+':</b> '+L(s[1],s[2])+'. '+(n>=s[0]?'<span class="chip g">'+L('Scheme lag gayi','Scheme applied')+'</span>':L((s[0]-n)+' aur lene par milegi.','Add '+(s[0]-n)+' more to get it.'))+'</p>'+(n>=s[0]?'':'<div class="bt"><button class="yes" data-a="inc" data-id="'+p.id+'">+1 '+un(p,1)+'</button></div>')+'</div>'}return h}
+function up(p,n){var s=SLAB[p.id];n=n===undefined?q(p.id):n;return p.price-(s&&n>=s[0]?s[1]:0)}
+function prefill(){S.cart={};S.list.forEach(function(id){var p=by(id);if(p.last>0&&!p.oos&&(S.mode!=='old'||!p.ev||band(p)==='now'))S.cart[id]=p.last});S.run.forEach(function(r){if(!S.cart[r.id])S.cart[r.id]=1})}
+/* ---------- Hindi (Devanagari) ---------- */
+var TR={aa:'आ',aage:'आगे',aaj:'आज',aam:'आम',aane:'आने',aap:'आप',aapka:'आपका',aapke:'आपके',aapki:'आपकी',aapko:'आपको',aasan:'आसान',aaya:'आया',aayegi:'आएगी',aayi:'आई',abhi:'अभी',agla:'अगला',agle:'अगले',agli:'अगली',andar:'अंदर',andaza:'अंदाज़ा',ank:'अंक',apna:'अपना',apne:'अपने',apni:'अपनी',aur:'और',awaaz:'आवाज़',baad:'बाद',baaki:'बाकी',baar:'बार',baat:'बात',bacha:'बचा',bachat:'बचत',bache:'बचे',badal:'बदल',badalna:'बदलना',badh:'बढ़',badhein:'बढ़ें',badhti:'बढ़ती',badlav:'बदलाव',badle:'बदले',badlein:'बदलें',bahi:'बही',baje:'बजे',ban:'बन',bana:'बना',banate:'बनाते',banayein:'बनाएँ',band:'बंद',bar:'बार',bas:'बस',bata:'बता',batayegi:'बताएगी',batayein:'बताएँ',bechne:'बेचने',beech:'बीच',bhar:'भर',bharein:'भरें',bhari:'भरी',bhav:'भाव',bhej:'भेज',bhejegi:'भेजेगी',bhejein:'भेजें',bhejenge:'भेजेंगे',bhejna:'भेजना',bhi:'भी',bhool:'भूल',bilkul:'बिल्कुल',bina:'बिना',bol:'बोल',bolein:'बोलें',bolenge:'बोलेंगे',boliye:'बोलिए',chadhega:'चढ़ेगा',chahiye:'चाहिए',chal:'चल',chalu:'चालू',cheezein:'चीज़ें',chukana:'चुकाना',chukaya:'चुकाया',chukayein:'चुकाएँ',chukta:'चुकता',chunein:'चुनें',chuni:'चुनी',daal:'डाल',daalein:'डालें',dabayein:'दबाएँ',degi:'देगी',dein:'दें',dekh:'देख',dekha:'देखा',dekhein:'देखें',dekhne:'देखने',den:'देन',dete:'देते',dhoondein:'ढूँढें',di:'दी',dikhayein:'दिखाएँ',dikhi:'दिखीं',dikkat:'दिक्कत',din:'दिन',diya:'दिया',diye:'दिए',do:'दो',dobara:'दोबारा',dono:'दोनों',doon:'दूँ',door:'दूर',dukaan:'दुकान',dukaandaar:'दुकानदार',dukaanein:'दुकानें',dukaanon:'दुकानों',ek:'एक',gaya:'गया',gaye:'गए',gayi:'गई',girega:'गिरेगा',haan:'हाँ',haath:'हाथ',hai:'है',hain:'हैं',har:'हर',hata:'हटा',hi:'ही',hisaab:'हिसाब',ho:'हो',hoga:'होगा',hoon:'हूँ',hote:'होते',hua:'हुआ',hui:'हुई',hum:'हम',ilaake:'इलाके',inke:'इनके',is:'इस',ise:'इसे',jagah:'जगह',jaisa:'जैसा',jaise:'जैसे',jaisi:'जैसी',jayega:'जाएगा',jayegi:'जाएगी',jo:'जो',jod:'जोड़',jodein:'जोड़ें',jud:'जुड़',ka:'का',kaam:'काम',kaat:'काट',kaatein:'काटें',kahan:'कहाँ',kaise:'कैसे',kal:'कल',kam:'कम',kamai:'कमाई',kar:'कर',karega:'करेगा',karegi:'करेगी',karein:'करें',karenge:'करेंगे',karke:'करके',karna:'करना',karte:'करते',karti:'करती',kat:'कट',kaunsa:'कौन सा',ke:'के',khaali:'खाली',kharida:'खरीदा',khata:'खाता',khatam:'खत्म',khate:'खाते',kheenchein:'खींचें',kholein:'खोलें',khud:'खुद',khulega:'खुलेगा',ki:'की',kidhar:'किधर',kijiye:'कीजिए',kiye:'किए',ko:'को',koi:'कोई',kuch:'कुछ',kul:'कुल',kya:'क्या',lag:'लग',laga:'लगा',lage:'लगे',lagega:'लगेगा',lagi:'लगी',le:'ले',legi:'लेगी',lein:'लें',len:'लेन',lene:'लेने',lenge:'लेंगे',lete:'लेते',li:'ली',likh:'लिख',likhein:'लिखें',likhi:'लिखी',liya:'लिया',liye:'लिए',lo:'लो',maaf:'माफ़',maal:'माल',maang:'माँग',mahine:'महीने',main:'मैं',mandi:'मंडी',mangwana:'मँगवाना',mauke:'मौके',mehenga:'महँगा',mein:'में',mera:'मेरा',mere:'मेरे',mil:'मिल',mila:'मिला',mile:'मिले',milegi:'मिलेगी',mohalla:'मोहल्ला',naam:'नाम',nag:'नग',nahi:'नहीं',namoona:'नमूना',naya:'नया',nayi:'नई',ne:'ने',neeche:'नीचे',paas:'पास',pada:'पड़ा',padega:'पड़ेगा',padh:'पढ़',pahunch:'पहुँच',paisa:'पैसा',pakka:'पक्का',par:'पर',parchi:'पर्ची',parso:'परसों',pehchanna:'पहचानना',pehla:'पहला',pehle:'पहले',pehli:'पहली',phir:'फिर',pichla:'पिछला',pichle:'पिछले',pichli:'पिछली',poora:'पूरा',poori:'पूरी',purane:'पुराने',raha:'रहा',rahi:'रही',rakh:'रख',rakhein:'रखें',rakhne:'रखने',raste:'रास्ते',rehne:'रहने',saaf:'साफ़',saamne:'सामने',saath:'साथ',sab:'सब',sahayak:'सहायक',sakta:'सकता',sakte:'सकते',samajh:'समझ',sasta:'सस्ता',se:'से',shaadi:'शादी',shuru:'शुरू',shuruaati:'शुरुआती',sirf:'सिर्फ़',sujhav:'सुझाव',sun:'सुन',tabhi:'तभी',taiyaar:'तैयार',tak:'तक',tareekh:'तारीख',tay:'तय',teeno:'तीनों',tezi:'तेज़ी',theek:'ठीक',thok:'थोक',toh:'तो',tuta:'टूटा',uski:'उसकी',wala:'वाला',wale:'वाले',wapas:'वापस',wapasi:'वापसी',woh:'वह',ya:'या',yaad:'याद',yahan:'यहाँ',yahi:'यही',yeh:'यह',zaroorat:'ज़रूरत',zyada:'ज़्यादा',
+order:'ऑर्डर',list:'लिस्ट',item:'आइटम',delivery:'डिलीवरी',payment:'पेमेंट',cash:'कैश',wallet:'वॉलेट',scheme:'स्कीम',margin:'मार्जिन',call:'कॉल',photo:'फोटो',bill:'बिल',shelf:'शेल्फ',stock:'स्टॉक',limit:'लिमिट',review:'रिव्यू',lock:'लॉक',pool:'पूल',season:'सीज़न',pack:'पैक',free:'फ्री',coupon:'कूपन',carton:'कार्टन',packet:'पैकेट',bori:'बोरी',peti:'पेटी',phone:'फोन',number:'नंबर',code:'कोड',app:'ऐप',demo:'डेमो',mic:'माइक',speaker:'स्पीकर',camera:'कैमरा',track:'ट्रैक',time:'समय',minute:'मिनट',quantity:'मात्रा',mobile:'मोबाइल',location:'लोकेशन',pincode:'पिनकोड',password:'पासवर्ड',notification:'नोटिफिकेशन',autopilot:'ऑटोपायलट',business:'बिज़नेस',partner:'पार्टनर',distributor:'डिस्ट्रीब्यूटर',data:'डेटा',model:'मॉडल',result:'नतीजा',trend:'ट्रेंड',extra:'ज़्यादा',try:'आज़मा',store:'स्टोर',general:'जनरल',step:'स्टेप',page:'पेज',line:'लाइन',save:'सेव',missed:'मिस्ड',net:'नेट',end:'अंत',per:'प्रति',kari:'करी',kirana:'किराना',club:'क्लब',kanpur:'कानपुर',sonu:'सोनू',namaste:'नमस्ते',nov:'नवंबर',november:'नवंबर',oct:'अक्टूबर',october:'अक्टूबर',december:'दिसंबर',budhwar:'बुधवार',cart:'कार्ट',good:'गुड',day:'डे',jayein:'जाएँ',kharid:'खरीद',quintal:'क्विंटल',
+atta:'आटा',chini:'चीनी',dal:'दाल',toor:'तूर',arhar:'अरहर',chawal:'चावल',besan:'बेसन',tel:'तेल',sarson:'सरसों',sunflower:'सनफ्लावर',namak:'नमक',haldi:'हल्दी',chai:'चाय',sabun:'साबुन',maggi:'मैगी','parle-g':'पारले-जी',soya:'सोया',chunks:'चंक्स',tata:'टाटा',tea:'टी',gold:'गोल्ड',red:'रेड',label:'लेबल',gehun:'गेहूँ',masale:'मसाले',nashta:'नाश्ता',safai:'सफाई',paan:'पान',circle:'गोला',box:'डिब्बा',round:'गोल',vim:'विम',poha:'पोहा'};
+var PH={1:'आशीर्वाद आटा',2:'चीनी',3:'तूर दाल',4:'मूंग दाल',5:'सोना मसूरी चावल',6:'राजधानी बेसन',7:'टाटा संपन्न पोहा',8:'फॉर्च्यून सनफ्लावर तेल',9:'फॉर्च्यून सरसों तेल',10:'टाटा नमक',11:'एवरेस्ट हल्दी',12:'एवरेस्ट लाल मिर्च',13:'टाटा टी गोल्ड',14:'रेड लेबल चाय',15:'मैगी नूडल्स',16:'पारले-जी',17:'कुरकुरे',18:'सर्फ एक्सेल',19:'विम बार',20:'लाइफबॉय साबुन',21:'कोलगेट',22:'साइकिल अगरबत्ती',23:'न्यूट्रेला सोया चंक्स',24:'गुड डे',25:'क्लिनिक प्लस सैशे',26:'बोर्नविटा'};
+function tr(s){return String(s).replace(/[A-Za-z][A-Za-z\-']*/g,function(w){return TR[w.toLowerCase()]||w})}
+function IT(){return S.lang==='en'?'item':'आइटम'}
+var EX={
+ last:[['अभी मँगवाना है','Due now'],['हर आइटम की अपनी रफ़्तार होती है। करी देखती है कि आप कौन सा आइटम कितने दिन में लेते हैं, और सिर्फ़ वही भरती है जो अब खत्म होने वाला है।','Every item runs out at its own speed. Kari looks at how often you buy each one and fills in only what is about to run out.']],
+ yaad:[['याद लिस्ट','Yaad List'],['महीने में जब भी कुछ याद आए या ग्राहक कुछ माँगे, यहाँ लिख लें। अगले ऑर्डर में वह अपने आप जुड़ जाता है।','Whenever you remember something or a customer asks for it, note it here. It joins your next order by itself.']],
+ bundle:[['बंडल','Bundles'],['साथ में लिए जाने वाले आइटम का एक सेट। एक बार दबाइए, पूरा सेट कार्ट में। अपना कार्ट भी बंडल बना कर रख सकते हैं।','A set of items you buy together. One tap adds the whole set. You can also save your own cart as a bundle.']],
+ margin:[['मार्जिन क्या है?','What is margin?'],['MRP पर बेचने के बाद जो पैसा आपके पास बचता है, वह मार्जिन है। हरी पट्टी में आपका खरीद भाव लिखा है।','Margin is the money you keep after selling at MRP. The green pill shows your buying price.']],
+ thok:[['थोक भाव','Bulk price'],['एक साथ ज़्यादा लेने पर हर नग सस्ता मिलता है। कितने और लेने हैं, यह हर आइटम के नीचे लिखा है।','Buy more at once and each unit costs less. Each item shows how many more you need.']],
+ khata:[['खाता कैसे चलता है?','How khata works'],['अभी माल लीजिए, पैसा महीने के अंत में एक बार चुकाइए। कम या टूटा माल आए तो उतना पैसा अपने आप घट जाता है।','Take goods now and settle once at month end. If something arrives short or damaged, that amount comes off by itself.']],
+ kari:[['करी कौन है?','Who is Kari?'],['करी किराना क्लब की AI सहायक है। वह लिस्ट बनाती है और सुझाव देती है, पर ऑर्डर हमेशा आप ही पक्का करते हैं।','Kari is Kirana Club\'s AI helper. She prepares your list and suggests changes, but only you can place the order.']],
+ wallet:[['वॉलेट कैश','Wallet cash'],['यह किराना क्लब से मिला इनाम है। अगले ऑर्डर के बिल में अपने आप घट जाता है।','This is reward money from Kirana Club. It comes off your next bill automatically.']]};
+/* ---------- restock loop: rhythm, Yaad List, bundles ---------- */
+var RH0={1:[30,29],2:[30,29],3:[30,29],4:[30,29],5:[30,29],6:[45,29],7:[45,29],8:[30,29],9:[30,29],10:[30,29],11:[60,29],12:[60,29],13:[30,29],14:[30,29],15:[14,13],16:[7,8],17:[10,9],18:[40,29],19:[30,29],20:[30,29],21:[45,29],22:[90,29]};
+var MON=[['जन','Jan'],['फ़र','Feb'],['मार्च','Mar'],['अप्रैल','Apr'],['मई','May'],['जून','Jun'],['जुल','Jul'],['अग','Aug'],['सित','Sep'],['अक्टू','Oct'],['नवं','Nov'],['दिसं','Dec']];
+function dAgo(n){var d=new Date(2026,10,25-n);return d.getDate()+' '+MON[d.getMonth()][S.lang==='en'?1:0]}
+function band(p){if(!p.ev||S.mode!=='old')return '';var r=p.ago/p.ev;return r>=.9?'now':r>=.6?'soon':'ok'}
+function inRun(id){return S.run.some(function(r){return r.id===id})}
+function addRun(id,w,nocart){if(!inRun(id))S.run.push({id:id,w:w,d:0});if(!nocart&&!q(id))S.cart[id]=1}
+function prefillAll(){S.cart={};S.list.forEach(function(id){var p=by(id);if(p.last>0&&!p.oos)S.cart[id]=p.last})}
+function agoTxt(p){return p.ago?L(p.ago+' दिन पहले लिया','bought '+p.ago+' days ago'):L('आज मँगवाया','ordered today')}
+function yaadHtml(){
+  if(S.mode!=='old'&&!S.run.length)return '';
+  var W={ask:L('ग्राहक ने माँगा','Customer asked'),voice:L('आपने बोला','You said it'),note:L('आपने लिखा','You noted it'),budget:L('बजट के लिए रोका','Held for budget')};
+  return '<div class="ai"><div class="hd">'+ic('spark')+L('याद लिस्ट','Yaad List')+' · '+S.run.length+qm('yaad')+'<button data-a="cap">'+L('+ नोट जोड़ें','+ Add a note')+'</button></div>'+(S.run.length?S.run.map(function(r){var p=by(r.id);return '<div class="row" style="background:#FBF8FF">'+art(p)+'<div class="mid"><div class="nm">'+nm(p)+'</div><div class="pr"><span class="chip p">'+W[r.w]+' · '+dAgo(r.d)+'</span></div></div>'+stp(p.id)+'</div>'}).join(''):'<div class="sg"><p style="margin:0">'+L('महीने में जब भी कुछ याद आए, यहाँ लिख लें। अगले ऑर्डर में अपने आप जुड़ जाएगा।','Whenever you remember something during the month, note it here. It joins your next order by itself.')+'</p></div>')+'</div>';
+}
+function bundles(){var a=[];
+  if(S.mode==='old'){var ls=S.list.map(by).filter(function(p){return p.last&&!p.oos&&p.ev});
+    var m=ls.filter(function(p){return p.ev>=25&&p.ev<=35}),w=ls.filter(function(p){return p.ev<=14});
+    if(m.length)a.push({k:'m',n:L('महीने का राशन','Monthly staples'),it:m.map(function(p){return[p.id,p.last]})});
+    if(w.length)a.push({k:'w',n:L('हफ्ते के तेज़ बिकने वाले','Weekly fast movers'),it:w.map(function(p){return[p.id,p.last]})})}
+  S.myb.forEach(function(b,i){a.push({k:'u'+i,n:L('मेरा बंडल ','My bundle ')+(i+1),it:b})});return a}
+function bunHtml(){var b=bundles();if(!b.length)return '';
+  return '<div class="h">'+L('मेरे बंडल','My bundles')+qm('bundle')+'</div><div class="hs">'+b.map(function(x){var tt=0,all=true;x.it.forEach(function(i){tt+=i[1]*by(i[0]).price;if(q(i[0])<i[1])all=false});
+    return '<div class="pc bn"><div style="display:flex;margin-bottom:8px">'+x.it.slice(0,4).map(function(i){return art(by(i[0]))}).join('')+'</div><div class="nm" style="min-height:0">'+x.n+'</div><div class="mut" style="font-size:12px;margin:2px 0 10px">'+x.it.length+' '+IT()+' · '+inr(tt)+'</div>'+(all?'<span class="chip g">'+L('कार्ट में है','In cart')+'</span>':'<button class="addb" data-a="bun" data-v="'+x.k+'">'+L('+ सब जोड़ें','+ Add all')+'</button>')+'</div>'}).join('')+'</div>';
+}
+function fillHtml(){var best=null;for(var k in SLAB){var p=by(+k),n=q(p.id),s=SLAB[k];if(n>0&&n<s[0]){var extra=(s[0]-n)*(p.price-s[1]);if(!best||extra<best.extra)best={p:p,need:s[0],n:n,extra:extra,save:s[0]*s[1]}}}
+  if(!best)return '';var more=best.need-best.n;
+  return '<div class="sg f">'+art(best.p)+'<div><p style="margin-top:0"><b>'+L('थोड़ा और, भाव कम','Fill up for a better rate')+':</b> '+L(nm(best.p)+' '+more+' और लें तो '+inr(best.save)+' बचेंगे।','Take '+more+' more '+nm(best.p)+' and save '+inr(best.save)+'.')+'</p><div class="bt"><button class="yes" data-a="fill" data-id="'+best.p.id+'" data-v="'+best.need+'">+'+more+' '+un(best.p,more)+'</button></div></div></div>';
+}
+function budHtml(){var m=S.mult||1;
+  if(S.trim&&S.trim.length)return '<div class="sg"><p style="margin-top:0"><b>'+L('बजट','Budget')+' '+inr(S.bud)+':</b> '+L('करी ने '+S.trim.length+' आइटम अगली बार के लिए याद लिस्ट में रख दिए।','Kari moved '+S.trim.length+' items to your Yaad List for next time.')+'</p><div class="bt"><button class="yes" data-a="unbud">'+L('वापस लाएँ','Bring them back')+'</button></div></div>';
+  return '<div class="sg"><p style="margin-top:0"><b>'+L('इस बार का बजट?','Budget for this order?')+'</b> '+L('करी कम ज़रूरी आइटम अगली बार के लिए रोक देगी।','Kari will hold back the least urgent items for next time.')+'</p><div class="bt">'+[30000*m,40000*m].map(function(o){return '<button class="yes" data-a="bud" data-v="'+o+'">'+inr(o)+'</button>'}).join('')+'</div></div>';
+}
+function capSheet(){var ex=P.filter(function(p){return S.list.indexOf(p.id)<0&&!inRun(p.id)}).slice(0,3);
+  return '<div class="shade" data-a="exclose"></div><div class="sheet"><h4>'+L('क्या याद रखना है?','What do you need to remember?')+'</h4><p style="margin-bottom:12px">'+L('आइटम का नाम लिखें या चुनें। अगले ऑर्डर में अपने आप जुड़ जाएगा।','Type or pick an item. It joins your next order by itself.')+'</p><input class="fld" id="capi" placeholder="'+L('जैसे: सोया, बोर्नविटा','e.g. soya, bournvita')+'" style="font-size:16px;padding:13px"><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">'+ex.map(function(p){return '<button class="addb" data-a="capchip" data-id="'+p.id+'">'+nm(p)+'</button>'}).join('')+'</div><div class="bt"><button class="cta ghost" data-a="caplost">'+L('ग्राहक ने माँगा, नहीं था','Customer asked, I had none')+'</button><button class="cta" data-a="capadd">'+L('याद लिस्ट में जोड़ें','Add to Yaad List')+'</button></div></div>';
+}
+function itemSheet(){var p=by(S.item),hist='';
+  if(p.ev&&S.mode==='old'&&p.last){[0,1,2].forEach(function(i){var d=p.ago+p.ev*i,pr=p.price-(i?(p.delta||0):0);hist+='<div class="sum"><span>'+dAgo(d)+'</span><span>'+Math.max(1,p.last-(i===2?1:0))+' '+un(p,p.last)+'</span><b>'+inr(pr)+'</b></div>'});
+    var left=p.ev-p.ago;
+    hist='<div class="card" style="margin-bottom:12px">'+hist+'</div><p style="margin-bottom:14px">'+L('आप इसे लगभग हर '+p.ev+' दिन में लेते हैं। ','You buy this about every '+p.ev+' days. ')+(left<=0?L('अब मँगवाने का समय है।','It is due now.'):L('अगली बार लगभग '+left+' दिन में।','Next due in about '+left+' days.'))+'</p>'}
+  else hist='<p style="margin-bottom:14px">'+L('यह आपने अभी तक नहीं मँगवाया। आपके इलाके में चल रहा है।','You have not ordered this yet. It is selling in your area.')+'</p>';
+  return '<div class="shade" data-a="exclose"></div><div class="sheet"><div style="display:flex;gap:12px;align-items:center;margin-bottom:14px">'+art(p)+'<div><h4 style="margin:0">'+nm(p)+'</h4><div class="mut" style="font-size:13px">'+pk(p)+' · <b class="pp">'+inr(p.price)+'</b> · '+inr(p.mrp-p.price)+' '+L('margin','margin')+'</div></div></div>'+hist+'<div class="bt"><button class="cta ghost" data-a="runadd" data-id="'+p.id+'">'+L('याद लिस्ट में','To Yaad List')+'</button><button class="cta" data-a="buyagain" data-id="'+p.id+'">'+(p.last?L('फिर से लें · '+p.last,'Buy again · '+p.last):L('कार्ट में जोड़ें','Add to cart'))+'</button></div></div>';
+}
+function sheetHtml(){return S.cap?capSheet():S.item?itemSheet():exSheet()}
+
+function qm(k){return '<button class="qm" data-a="ex" data-v="'+k+'" aria-label="Explain">?</button>'}
+function exSheet(){if(!S.ex)return '';var x=EX[S.ex],i=S.lang==='en'?1:0;return '<div class="shade" data-a="exclose"></div><div class="sheet"><h4>'+x[0][i]+'</h4><p>'+x[1][i]+'</p><div class="bt"><button class="cta ghost" data-a="exsay">'+(S.lang==='en'?'Listen':'सुनें')+'</button><button class="cta" data-a="exclose">'+(S.lang==='en'?'Got it':'समझ गया')+'</button></div></div>'}
+
+function L(h,e){return S.lang==='en'?e:tr(h).replace(/\.(\s|$)/g,'।$1')}
+var PKW={kg:'किलो',l:'लीटर',g:'ग्राम',pack:'पैक',bar:'बार'};
+function pk(p){return S.lang==='en'?p.pk:p.pk.replace(/[A-Za-z]+/g,function(w){return PKW[w.toLowerCase()]||w})}
+function by(id){return P.filter(function(p){return p.id===id})[0]}
+function nm(p){return S.lang==='en'?(p.en||p.n):PH[p.id]}
+function un(p,n){var e={bori:n>1?'sacks':'sack',peti:n>1?'cases':'case',carton:n>1?'cartons':'carton'}[p.u];return L(p.u,e)}
+function inr(n){return (n<0?'−':'')+'₹'+Math.abs(n).toLocaleString('en-IN')}
+function q(id){return S.cart[id]||0}
+function tot(){var c=0,t=0,m=0,u=0,s=0;for(var k in S.cart){var p=by(+k),n=S.cart[k];if(n>0){c++;u+=n;t+=n*up(p,n);m+=n*(p.mrp-up(p,n));s+=n*(p.price-up(p,n))}}var cb=(q(14)&&q(2)&&q(16))?120:0;t-=cb;var w=c?Math.min(S.wallet||0,t):0;return{c:c,t:t-w,m:m,u:u,s:s,w:w,cb:cb}}
+function changes(){var n=0;P.forEach(function(p){var b=(S.list.indexOf(p.id)>=0&&p.last>0&&!p.oos&&band(p)==='now')?p.last:(inRun(p.id)?1:0);if(q(p.id)!==b)n++});return n}
+
+/* ---------- icons + pack art ---------- */
+var IC={home:'<path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>',box:'<path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/>',chart:'<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',phone:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.8 2z"/>',mic:'<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4"/>',search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',back:'<path d="M15 18l-6-6 6-6"/>',check:'<path d="M20 6L9 17l-5-5"/>',send:'<path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/>',vol:'<path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/>',cam:'<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',x:'<path d="M18 6L6 18M6 6l12 12"/>',cart:'<circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2 3h3l2.6 12h11l2.4-8H6.2"/>',spark:'<path d="M12 2l2.2 6.3L20.5 10.5l-6.3 2.2L12 19l-2.2-6.3L3.5 10.5l6.3-2.2z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/>'};
+function ic(n){return '<svg class="i" viewBox="0 0 24 24">'+IC[n]+'</svg>'}
+function art(p){
+  if(p.id!==13)return '<div class="art'+([2,3,4,5,22].indexOf(p.id)>=0?' cv':'')+'"><img src="img/p'+p.id+'.jpg" alt="" loading="lazy"></div>';
+  var c=p.c,s;
+  if(p.sh==='sack')s='<path d="M12 8h16l-2 5c5 4 7 9 7 15 0 4-3 6-6 6H13c-3 0-6-2-6-6 0-6 2-11 7-15z" fill="'+c+'"/><path d="M13 13h14" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".7"/><rect x="13" y="20" width="14" height="8" rx="2" fill="#fff" opacity=".85"/>';
+  else if(p.sh==='bottle')s='<rect x="16" y="3" width="8" height="5" rx="1.5" fill="#fff" stroke="'+c+'" stroke-width="2"/><path d="M14 12c0-2 2-3 3-4h6c1 1 3 2 3 4v20a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3z" fill="'+c+'"/><rect x="14" y="18" width="12" height="9" fill="#fff" opacity=".85"/>';
+  else if(p.sh==='pouch')s='<path d="M9 6h22l-2 4v22a3 3 0 0 1-3 3H14a3 3 0 0 1-3-3V10z" fill="'+c+'"/><path d="M9 6h22" stroke="#fff" stroke-width="2" opacity=".6"/><circle cx="20" cy="22" r="6" fill="#fff" opacity=".85"/>';
+  else if(p.sh==='bar')s='<rect x="5" y="12" width="30" height="17" rx="5" fill="'+c+'"/><rect x="11" y="16" width="18" height="9" rx="3" fill="#fff" opacity=".85"/>';
+  else s='<rect x="8" y="6" width="24" height="29" rx="3" fill="'+c+'"/><rect x="8" y="6" width="24" height="6" rx="3" fill="#000" opacity=".15"/><rect x="12" y="17" width="16" height="10" rx="2" fill="#fff" opacity=".88"/>';
+  return '<div class="art" style="background:'+c+'22"><svg viewBox="0 0 40 40">'+s+'</svg></div>';
+}
+
+/* ---------- shared bits ---------- */
+function stp(id){var n=q(id);return n>0?'<div class="stp"><button data-a="dec" data-id="'+id+'" aria-label="minus">−</button><b>'+n+'</b><button data-a="inc" data-id="'+id+'" aria-label="plus">+</button></div>':'<button class="addb" data-a="inc" data-id="'+id+'">+ '+L('Jodein','Add')+'</button>'}
+function prow(p,slim){
+  var n=q(p.id),flags='';
+  if(p.oos){var a=by(p.alt);return '<div class="row">'+art(p).replace('class="art','class="art off')+'<div class="mid"><div class="nm" style="color:var(--mut)">'+nm(p)+'</div><div class="pr"><span class="chip r">'+L('Abhi stock mein nahi','Out of stock')+'</span></div><div class="pk">'+L('Badle mein: ','Swap for: ')+nm(a)+' · '+inr(a.price)+'</div></div>'+(q(a.id)>0&&S.swapped?'<span class="chip g">'+L('Badal diya','Swapped')+'</span>':'<button class="addb" data-a="swap" data-id="'+p.id+'">'+L('Badal dein','Swap')+'</button>')+'</div>'}
+  if(p.delta<0)flags+='<span class="chip g">'+inr(-p.delta)+' '+L('sasta hua','cheaper')+'</span>';
+  if(p.delta>0)flags+='<span class="chip a">'+inr(p.delta)+' '+L('mehenga hua','costlier')+'</span>';
+  var sc=SCH[p.id];if(sc&&n>0)flags+=n>=sc[0]?'<span class="chip g">'+L('Scheme lagi','Scheme applied')+'</span>':'<span class="chip p">'+L('Scheme: ','Scheme: ')+L(sc[1],sc[2])+'</span>';
+  var sl=SLAB[p.id];if(sl&&n>0)flags+=n>=sl[0]?'<span class="chip g">'+L('Thok bhav laga','Bulk price on')+'</span>':'<span class="chip a">'+(sl[0]-n)+L(' aur lo, ',' more for ')+inr(sl[1])+L(' kam har ',' off per ')+un(p,1)+'</span>';
+  return '<div class="row">'+art(p)+'<div class="mid"><div class="nm" data-a="item" data-id="'+p.id+'">'+nm(p)+'<span class="hist"> ›</span></div><div class="pk">'+pk(p)+' · '+un(p,1)+(slim?'':(p.ev&&S.mode==='old'?' · '+agoTxt(p):(p.last?' · '+L('pichli baar ','last time ')+p.last:'')))+'</div><div class="pr"><b class="pp">'+inr(up(p))+'</b><span class="mrp">MRP '+inr(p.mrp)+'</span>'+(slim?'':'<span class="mg">'+inr(p.mrp-up(p))+' '+L('margin','margin')+'</span>')+flags+'</div></div>'+stp(p.id)+'</div>';
+}
+function tabs(on){
+  var t=[['home','home',L('List','List')],['orders','box',L('Order','Orders')],['khata','book',L('Khata','Khata')],['feed','chart',L('Mauke','Deals')]];
+  return '<div class="tabs">'+t.map(function(x){return '<button class="'+(on===x[0]?'on':'')+'" data-a="go" data-s="'+x[0]+'">'+ic(x[1])+x[2]+(x[0]==='orders'&&S.order&&!S.order.closed?'<i class="dot"></i>':'')+'</button>'}).join('')+'</div>';
+}
+function fab(b){return '<button class="fab" style="bottom:'+b+'px" data-a="call"><i>'+ic('phone')+'</i>'+L('Kari ko call karein','Call Kari')+'</button>'}
+function bar(t,back){return '<div class="bar"><button class="back" data-a="go" data-s="'+back+'" aria-label="back">'+ic('back')+'</button><h3>'+t+'</h3></div>'}
+var toastT;
+function toast(m){var o=document.querySelector('.toast');if(o)o.remove();var d=document.createElement('div');d.className='toast';d.textContent=m;document.getElementById('app').appendChild(d);clearTimeout(toastT);toastT=setTimeout(function(){d.remove()},2400)}
+
+/* ---------- screens ---------- */
+var V={};
+V.lock=function(){return '<div class="lock" style="background-image:url(img/shop1.jpg)"><div class="time">9:41</div><div class="date">'+L('Budhwar, 25 November','Wednesday, 25 November')+'</div><button class="notif" data-a="go" data-s="home"><div class="app"><i class="lg">K</i>'+L('Kirana Club','Kirana Club')+' · '+L('abhi','now')+'</div><b>'+L(''+NM()+', Kari ne aapki list bana di',''+NM()+', Kari has prepared your list')+'</b><p>'+L('14 आइटम अभी मँगवाने हैं, 2 आपकी याद लिस्ट से। 2 मिनट में ऑर्डर करें।','14 items are due now, plus 2 from your Yaad List. Order in 2 minutes.')+'</p><div class="go">'+L('List kholein','Open my list')+'</div></button><div class="grow"></div><p style="text-align:center;opacity:.5;font-size:12px;margin:0">'+L('Notification dabayein','Tap the notification')+'</p></div>'};
+
+function dots(n){var s='';for(var i=0;i<4;i++)s+='<i class="'+(i<=n?'on':'')+'"></i>';return '<div class="stepdots">'+s+'</div>'}
+V.lang=function(){
+  var o=[['en','En','English','Simple English'],['hi','अ','हिन्दी','आसान हिन्दी में'],['gu','ગ','ગુજરાતી','જલ્દી આવશે · coming soon']];
+  return '<div class="ob">'+dots(0)+'<div class="hero" style="background-image:url(img/shop3.jpg)"></div><h2>Choose your language</h2><p>अपनी भाषा चुनें। You can change it any time.</p>'+o.map(function(x){return '<button class="opt '+(S.obLang===x[0]?'on':'')+'" data-a="oblang" data-v="'+x[0]+'"><span class="ic">'+x[1]+'</span><span><b>'+x[2]+'</b><span>'+x[3]+'</span></span></button>'}).join('')+'<div class="grow"></div><button class="cta" data-a="go" data-s="phone">'+L('Aage badhein','Continue')+'</button></div>'};
+V.phone=function(){return '<div class="ob">'+dots(1)+'<h2>'+L('Aapka mobile number','Your mobile number')+'</h2><p>'+L('Hum ek code bhejenge. Password yaad rakhne ki zaroorat nahi.','We will send a code. No password to remember.')+'</p><input class="fld" id="ph" inputmode="numeric" maxlength="10" placeholder="98765 43210" value="'+S.phone+'"><div class="grow"></div><button class="cta" data-a="sendotp">'+L('Code bhejein','Send code')+'</button></div>'};
+V.otp=function(){return '<div class="ob">'+dots(1)+'<h2>'+L('Code daalein','Enter the code')+'</h2><p>'+L('SMS se apne aap bhar jayega.','It fills in by itself from the SMS.')+'</p><input class="fld" id="otp" inputmode="numeric" maxlength="4" placeholder="• • • •" style="letter-spacing:.5em;text-align:center"><button class="cta ghost" data-a="fillotp">'+L('SMS se bharein','Fill from SMS')+'</button><div class="grow"></div><button class="cta" data-a="verify">'+L('Aage badhein','Continue')+'</button></div>'};
+V.shop=function(){
+  var ty=[['kirana',L('Kirana','Kirana')],['general',L('General store','General store')],['pan',L('Paan dukaan','Paan shop')]];
+  return '<div class="ob">'+dots(2)+'<h2>'+L('Aapki dukaan','Your shop')+'</h2><p>'+L('Bas naam chahiye. Pincode location se le liya: 208001 Kanpur.','Just the name. Pincode taken from location: 208001 Kanpur.')+'</p><input class="fld" id="shop" placeholder="'+L('Dukaan ka naam','Shop name')+'" value="'+S.shop+'"><div style="display:flex;gap:8px;margin-bottom:12px">'+ty.map(function(x){return '<button class="opt '+(S.shopType===x[0]?'on':'')+'" style="margin:0;padding:12px;justify-content:center;font-weight:700" data-a="stype" data-v="'+x[0]+'">'+x[1]+'</button>'}).join('')+'</div><div class="grow"></div><button class="cta" data-a="saveshop">'+L('Aage badhein','Continue')+'</button></div>'};
+V.first=function(){return '<div class="ob">'+dots(3)+'<h2>'+L('Pehli list kaise banayein?','How shall we build your first list?')+'</h2><p>'+L('Khaali page se shuru nahi karna padega. Jo aasan lage woh chunein.','You never start from a blank page. Pick what feels easiest.')+'</p>'+
+  '<button class="opt" data-a="firstcall"><span class="ic">'+ic('phone')+'</span><span><b>'+L('Kari se baat karke','Talk to Kari')+'</b><span>'+L('Jaise distributor ko phone karte hain. 2 minute.','Like calling your distributor. 2 minutes.')+'</span></span></button>'+
+  '<button class="opt" data-a="firstphoto"><span class="ic">'+ic('cam')+'</span><span><b>'+L('Parchi ki photo kheenchein','Photo of your paper list')+'</b><span>'+L('Haath se likhi list padh lenge.','We read your handwritten list.')+'</span></span></button>'+
+  '<button class="opt" data-a="firststarter"><span class="ic">'+ic('box')+'</span><span><b>'+L('Shuruaati list se','Use a starter list')+'</b><span>'+L('Kanpur ki kirana dukaanon ka aam maal, 10 item.','What kirana shops in Kanpur usually stock, 10 items.')+'</span></span></button></div>'};
+
+V.home=function(){
+  var t=tot(),ch=changes(),act=S.order&&!S.order.closed,isNew=S.mode==='new'&&!S.past.length;
+  var h='<div class="scr" id="scr"><div class="top"><div class="who"><img class="ava" src="img/shop1.jpg" alt=""><div><div class="hi">'+(S.mode==='new'?L('Namaste! ','Namaste! ')+(S.shop||''):L('Namaste '+NM()+'','Namaste '+NM()+''))+'</div><div class="sub">208001 '+L('Kanpur','Kanpur')+' · '+L('Kal delivery mil jayegi','Delivery available tomorrow')+'</div></div><button class="wal" data-a="wal">'+inr(S.wallet)+'</button><button class="wal cartb" data-a="go" data-s="review" aria-label="Cart">'+ic('cart')+(t.c?'<i>'+t.c+'</i>':'')+'</button></div><div class="search">'+ic('search')+'<input id="sq" placeholder="'+L('Dhoondein: atta, tel, sabun…','Search: atta, oil, soap…')+'" value="'+S.q+'"><button data-a="scan" data-v="parchi" aria-label="camera">'+ic('cam')+'</button><button data-a="call" aria-label="mic">'+ic('mic')+'</button></div></div>';
+  if(act)h+='<button class="remind" style="width:calc(100% - 32px);text-align:left" data-a="go" data-s="orders"><div style="flex:1"><div class="chip p">'+L('Order chal raha hai','Order in progress')+'</div><div class="b" style="margin-top:6px">'+stName(S.order.status)+' · '+inr(S.order.total)+'</div><div class="mut" style="font-size:12.5px">'+L('Dekhne ke liye dabayein','Tap to track')+'</div></div>'+ic('box')+'</button>';
+  else if(S.done)h+='<div class="remind"><div style="flex:1"><div class="chip g">'+L('Agle mahine ki list taiyaar','Next month\'s list is ready')+'</div><div class="mut" style="font-size:12.5px;margin-top:6px">'+L('Aapka pichla order hi nayi list ban gaya. Agli baar bas quantity dekh lein.','Your last order became the new list. Next time just check the quantities.')+'</div></div></div><div class="ai"><div class="sg" style="border:0;display:flex;gap:12px;align-items:center"><div style="flex:1"><b>'+L('Kari autopilot','Kari autopilot')+'</b><p style="margin:3px 0 0" class="mut">'+L('Har mahine 25 tareekh ko Kari list bana kar WhatsApp par bhejegi. Aap "haan" bolenge tabhi order hoga.','On the 25th each month Kari sends the list on WhatsApp. It orders only when you say yes.')+'</p></div><button class="tog '+(S.auto?'on':'')+'" data-a="auto" aria-label="autopilot"></button></div></div>';
+  else if(!isNew)h+='<div class="remind"><div style="flex:1"><div class="mut" style="font-size:12px;font-weight:700">'+L('अभी मँगवाना है','DUE NOW')+qm('last')+'</div><div class="big">'+inr(t.t)+'</div><div class="mut" style="font-size:12.5px">'+L('आपकी रफ़्तार से · ','From your rhythm · ')+t.c+' '+IT()+''+(ch?' · '+ch+L(' badlav',' changes'):'')+'</div></div>'+(ch?'<button class="addb" data-a="reset">'+L('Wapas pehle jaisa','Reset')+'</button>':'<button class="cta" style="width:auto;padding:13px 15px;font-size:13px" data-a="go" data-s="review">'+L('Yahi order karein','Order this')+'</button>')+'</div>';
+  else h+='<div class="remind"><div style="flex:1"><div class="chip p">'+L('Aapki pehli list','Your first list')+'</div><div class="mut" style="font-size:12.5px;margin-top:6px">'+L('Quantity apne hisaab se badlein. Agli baar yahi list taiyaar milegi.','Change the quantities to suit you. Next time this list will be waiting.')+'</div></div></div>';
+  if(S.adding)h+='<div class="pad" style="margin-top:10px"><span class="chip a">'+L('ऑर्डर '+S.order.id+' में जोड़ रहे हैं','Adding to order '+S.order.id)+'</span></div>';
+  h+=yaadHtml()+bunHtml();
+  h+=sugHtml();
+  if(!isNew||S.list.length)h+='<div class="legend"><b class="pp">₹</b>'+L('aapka kharid bhav','your buying price')+' · <b style="color:var(--ink)">'+L('margin','margin')+'</b> '+L('aapki kamai','what you keep')+qm('margin')+'</div>';
+  h+='<div class="catbar"><button class="'+(S.cat==='all'?'on':'')+'" data-a="cat" data-v="all">'+L('ज़रूरत के हिसाब से','By need')+'</button>'+CATS.map(function(c){return '<button class="'+(S.cat===c.k?'on':'')+'" data-a="cat" data-v="'+c.k+'">'+L(c.h,c.e)+'</button>'}).join('')+'</div><div id="lw">'+listHtml()+'</div><div style="height:70px"></div></div>';
+  h+=fab(t.c?146:84);
+  if(t.c)h+='<div class="dock"><div class="t"><b>'+inr(t.t)+'</b><span>'+t.c+' '+IT()+' · '+L('कमाई ','margin ')+inr(t.m)+((t.s+t.cb+t.w)?' · '+L('बचत ','save ')+inr(t.s+t.cb+t.w):'')+'</span></div><button class="cta" data-a="go" data-s="review">'+L('Cart dekhein','View cart')+'</button></div>';
+  return h+tabs('home');
+};
+function sugHtml(){
+  if(S.mode!=='old'||(S.order&&!S.order.closed)||S.done)return '';
+  var o=sugOpen(),on=SUG.filter(function(s){return S.sug[s.k]==='on'}).length;
+  if(!o.length)return on?'<div class="ai"><div class="hd">'+ic('spark')+on+L(' sujhav laga diye',' suggestions applied')+'</div></div>':'';
+  if(!S.sugShow)return '<button class="ai" style="display:block;width:calc(100% - 32px);text-align:left" data-a="sugshow"><div class="hd" style="padding-bottom:14px">'+ic('spark')+L('Kari ke '+o.length+' sujhav hain','Kari has '+o.length+' suggestions')+'<span style="margin-left:auto;font-size:12.5px;text-decoration:underline">'+L('Dekhein','See')+'</span></div></button>';
+  return '<div class="ai"><div class="hd">'+ic('spark')+L('Kari ke sujhav','Kari suggests')+' · '+o.length+qm('kari')+'<button data-a="sugall">'+L('Sab laga dein','Apply all')+'</button></div>'+o.map(function(s){var p=by(s.pid);return '<div class="sg f">'+art(p)+'<div><span class="chip p">'+L(s.src[0],s.src[1])+'</span><p><b>'+nm(p)+':</b> '+sugText(s)+'</p><div class="bt"><button class="yes" data-a="sug" data-v="'+s.k+'">'+L('Laga dein','Apply')+'</button><button class="no" data-a="sugno" data-v="'+s.k+'">'+L('Nahi','No')+'</button></div></div></div>'}).join('')+'</div>';
+}
+function listHtml(){
+  var h='',s=S.q.trim().toLowerCase();
+  if(s){var r=P.filter(function(p){return (p.n+' '+(p.en||'')).toLowerCase().indexOf(s)>=0||p.kw.some(function(k){return k.indexOf(s)===0})});
+    return '<div class="h">'+L('Mila','Found')+' <small>'+r.length+' '+IT()+'</small></div>'+(r.length?'<div class="card" style="margin:0 16px">'+r.map(function(p){return prow(p)}).join('')+'</div>':'<div class="pad mut">'+L('Kuch nahi mila. Kari ko call karke bol dein.','Nothing found. Call Kari and just say it.')+'</div>')}
+  if(S.mode==='old'&&S.cat==='all'){[['now',L('अभी मँगवाना है','Due now'),L('आपकी खरीद की रफ़्तार से','from your buying rhythm')],['soon',L('जल्द खत्म होगा','Due soon'),L('1 से 2 हफ्ते में','in 1 to 2 weeks')],['ok',L('अभी स्टॉक में है','Still stocked'),L('अभी ज़रूरत नहीं','not needed yet')],['',L('नया जोड़ा','Newly added'),'']].forEach(function(b){var it=S.list.map(by).filter(function(p){return band(p)===b[0]&&(b[0]||!inRun(p.id))});if(!it.length)return;h+='<div class="h">'+b[1]+' <small>'+it.length+' '+IT()+(b[2]?' · '+b[2]:'')+'</small></div><div class="card" style="margin:0 14px">'+it.map(function(p){return prow(p)}).join('')+'</div>'})}
+  else CATS.forEach(function(c){if(S.cat!=='all'&&S.cat!==c.k)return;var it=S.list.map(by).filter(function(p){return p.cat===c.k});if(!it.length)return;
+    h+='<div class="h">'+L(c.h,c.e)+' <small>'+it.length+' '+IT()+'</small></div><div class="card" style="margin:0 16px">'+it.map(function(p){return prow(p)}).join('')+'</div>'});
+  var ex=P.filter(function(p){return S.list.indexOf(p.id)<0&&(S.cat==='all'||S.cat===p.cat)});
+  if(ex.length)h+='<div class="band">'+L('Aapke ilaake mein chal raha hai','Selling near you')+'<a>'+L('Sab dekhein','See all')+'</a></div><div class="hs">'+ex.map(function(p){return '<div class="pc">'+art(p)+'<div class="nm">'+nm(p)+'</div><div class="mut" style="font-size:11.5px">'+pk(p)+'</div><div style="margin:5px 0 8px"><b class="pp">'+inr(p.price)+'</b> <span class="mrp">MRP '+inr(p.mrp)+'</span><div class="b" style="font-size:12px;margin-top:4px">'+inr(p.mrp-p.price)+' '+L('margin','margin')+'</div></div>'+stp(p.id)+'</div>'}).join('')+'</div>';
+  return h;
+}
+
+V.review=function(){
+  var t=tot(),ids=Object.keys(S.cart).map(Number).filter(q),isNew=S.mode==='new'&&!S.past.length;
+  var left=S.khata.limit-S.khata.used;
+  var h=bar(S.adding?L('ऑर्डर में जोड़ें','Add to your order'):L('Aapka cart','Your cart'),'home')+'<div class="scr" id="scr" style="margin-top:-68px;padding-top:68px"><div class="card" style="margin:0 14px">'+ids.map(function(id){return prow(by(id),1)}).join('')+'</div>'+(ids.length?'<div class="pad" style="text-align:right;margin-top:8px"><button data-a="savebun" style="color:var(--pu-d);font-weight:800;font-size:12.5px;text-decoration:underline;margin-right:14px">'+L('बंडल बना कर रखें','Save as a bundle')+'</button><button data-a="clear" style="color:var(--mut);font-weight:700;font-size:12.5px;text-decoration:underline">'+L('Cart khaali karein','Empty the cart')+'</button></div>':'');
+  if(!ids.length)return bar(L('Aapka cart','Your cart'),'home')+'<div class="scr" id="scr"><div class="pad" style="text-align:center;padding-top:80px"><div style="width:84px;height:84px;border-radius:50%;background:var(--card2);display:grid;place-items:center;margin:0 auto 16px;color:var(--mut)">'+ic('cart')+'</div><div class="ttl" style="font-size:21px">'+L('Aapka cart khaali hai','Your cart is empty')+'</div><p class="mut" style="margin:8px 0 20px">'+L('List se maal jodein ya Kari ko call karein.','Add items from your list, or call Kari.')+'</p><button class="cta" data-a="go" data-s="home">'+L('List par jayein','Go to my list')+'</button></div></div>';
+  var miss=missing(),base=0;P.forEach(function(p){if(!p.oos)base+=p.last0*p.price});var df=t.t-base;
+  h+='<div class="ai"><div class="hd">'+ic('spark')+L('Kari ne ek baar dekh liya','Kari double-checked')+'</div><div class="sg"><p style="margin:0">'+(S.mode==='old'?(df?L('Yeh order pichle mahine se '+inr(Math.abs(df))+(df<0?' kam':' zyada')+' hai.','This order is '+inr(Math.abs(df))+(df<0?' less':' more')+' than last month.'):L('Yeh order bilkul pichle mahine jaisa hai.','This order matches last month exactly.'))+' '+(t.t>S.khata.limit-S.khata.used?L('Khata limit se zyada hai.','It is over your khata limit.'):L('Khata limit ke andar hai.','It is within your khata limit.')):L('Pehla order hai. Agli baar yahi list taiyaar milegi.','This is your first order. Next time this list will be waiting.'))+'</p></div>'+fillHtml()+budHtml()+schHtml()+miss.map(function(p){return '<div class="sg"><p><b>'+nm(p)+'</b> '+L('aap har mahine lete hain, is baar list mein nahi hai.','is something you take every month, but it is not in this order.')+'</p><div class="bt"><button class="yes" data-a="addlast" data-id="'+p.id+'">'+L('Jod dein · ','Add · ')+p.last0+' '+un(p,p.last0)+'</button></div></div>'}).join('')+'</div>';
+  h+='<div class="h">'+L('Delivery','Delivery')+'</div><div class="pad"><div style="display:flex;gap:8px">'+[L('Kal, 4 se 6 baje','Tomorrow, 4 to 6 pm'),L('Parso, 10 se 12 baje','Day after, 10 to 12')].map(function(x,i){return '<button class="pay '+(S.slot===i?'on':'')+'" style="margin:0;padding:12px" data-a="slot" data-v="'+i+'"><span class="rd"></span><b style="font-size:13px">'+x+'</b></button>'}).join('')+'</div><div class="mut" style="font-size:12.5px;margin-top:8px">'+(S.shop||'Ramesh Kirana Store')+', Swaroop Nagar, Kanpur 208001</div></div>';
+  h+='<div class="h">'+L('Hisaab','Bill')+'</div><div class="card" style="margin:0 16px"><div class="sum"><span>'+t.c+' '+IT()+', '+t.u+L(' nag',' units')+'</span><span>'+inr(t.t+t.w+t.cb)+'</span></div><div class="sum"><span>'+L('Delivery','Delivery')+'</span><span class="gr b">'+L('Free','Free')+'</span></div>'+(t.cb?'<div class="sum"><span>'+L('चाय कॉम्बो की बचत','Chai combo saving')+'</span><span class="gr b">'+inr(-t.cb)+'</span></div>':'')+(t.w?'<div class="sum"><span>'+L('Wallet cash','Wallet cash')+'</span><span class="gr b">'+inr(-t.w)+'</span></div>':'')+(t.s?'<div class="sum"><span>'+L('Thok bachat (hisaab mein lagi hui)','Bulk saving (already applied)')+qm('thok')+'</span><span class="gr b">'+inr(t.s)+'</span></div>':'')+'<div class="sum"><span>'+L('Bechne par aapki kamai','Your margin when sold')+'</span><span class="gr b">'+inr(t.m)+'</span></div><div class="sum b" style="font-size:16px"><span>'+L('Kul','Total')+'</span><span>'+inr(t.t)+'</span></div></div>';
+  h+='<div class="h">'+L('Payment kaise karenge?','How will you pay?')+'</div><div class="pad">'+
+   pay('khata',L('Khate mein likh dein','Put it on khata'),isNew?L('Pehle order ke baad khulega','Unlocks after your first order'):L('30 November ko chukayein · ','Pay on 30 November · ')+inr(left)+L(' limit baaki',' limit left'),isNew||t.t>left)+
+   pay('upi',L('Abhi UPI se','Pay now by UPI'),L('PhonePe, GPay, Paytm','PhonePe, GPay, Paytm'))+
+   pay('cod',L('Maal aane par cash','Cash on delivery'),L('Delivery wale ko dein','Pay the delivery person'))+
+   '<div class="note">'+L('Demo: khata limit aur partner business tay karega.','Demo: khata limit and lending partner are a business decision.')+'</div></div><div style="height:20px"></div></div>';
+  var sv=t.s+t.cb+t.w;
+  return h+'<div class="savebar"><div>'+(sv?'<b>'+L('आपने '+inr(sv)+' बचाए','You save '+inr(sv))+'</b><span>'+[t.s?L('थोक ','bulk ')+inr(t.s):'',t.cb?L('कॉम्बो ','combo ')+inr(t.cb):'',t.w?L('वॉलेट ','wallet ')+inr(t.w):''].filter(Boolean).join(' · ')+'</span>':'<b>'+L('अभी कोई बचत नहीं','No savings yet')+'</b><span>'+L('थोक भाव या कॉम्बो जोड़ें','add a bulk slab or a combo')+'</span>')+'</div><div style="text-align:right"><b>'+inr(t.m)+'</b><span>'+L('बेचने पर आपकी कमाई','your margin when sold')+'</span></div></div><div class="dock"><div class="t"><b>'+inr(t.t)+'</b><span>'+payName(S.pay)+'</span></div><button class="cta" data-a="place" '+(t.c?'':'disabled')+'>'+(S.adding?L('ऑर्डर में जोड़ें','Add to order'):S.editing?L('Order badlein','Update order'):L('Order pakka karein','Place order'))+'</button></div>';
+};
+function pay(k,t,d,dis){return '<button class="pay '+(S.pay===k&&!dis?'on':'')+'" data-a="pay" data-v="'+k+'" '+(dis?'disabled':'')+'><span class="rd"></span><span><b>'+t+'</b><span>'+d+'</span></span></button>'}
+function payName(k){return {khata:L('Khate mein, 30 Nov ko','On khata, due 30 Nov'),upi:L('UPI se abhi','UPI now'),cod:L('Cash, maal aane par','Cash on delivery')}[k]}
+function slotName(i){return [L('Kal, 4 se 6 baje','Tomorrow, 4 to 6 pm'),L('Parso, 10 se 12 baje','Day after, 10 to 12')][i]}
+
+V.placed=function(){var o=S.order;
+  return '<div class="scr" id="scr"><div class="ok">'+ic('check')+'</div><div style="text-align:center" class="pad"><div class="ttl">'+L('Order pakka ho gaya','Order confirmed')+'</div><div class="mut" style="margin-top:4px">'+o.id+' · '+o.n+' '+IT()+' · '+inr(o.total)+'</div></div>'+
+  '<div class="card" style="margin:20px 16px 0"><div class="sum"><span class="mut">'+L('Delivery','Delivery')+'</span><b>'+slotName(o.slot)+'</b></div><div class="sum"><span class="mut">'+L('Payment','Payment')+'</span><b>'+payName(o.pay)+'</b></div>'+(o.sv?'<div class="sum"><span class="mut">'+L('इस ऑर्डर पर बचत','You saved on this order')+'</span><b class="gr">'+inr(o.sv)+'</b></div>':'')+'<div class="sum"><span class="mut">'+L('बेचने पर आपकी कमाई','Your margin when sold')+'</span><b class="gr">'+inr(o.m||0)+'</b></div><div class="sum"><span class="mut">'+L('Badlav ka time baaki','Time left to edit')+'</span><b id="cd" style="color:var(--or)">2:00</b></div></div>'+
+  '<div class="pad" style="margin-top:10px"><button class="cta ghost" id="editb" data-a="editorder">'+L('Kuch bhool gaye? Order badlein','Forgot something? Edit order')+'</button></div>'+
+  '<div class="h">'+L('WhatsApp par bhi bhej diya','Also sent on WhatsApp')+'</div><div class="pad"><div class="wa"><b>'+L('Kirana Club','Kirana Club')+'</b><br>'+L((S.mode==='new'?'Namaste':''+NM()+'')+', aapka order '+o.id+' mil gaya. '+o.n+' '+IT()+', kul '+inr(o.total)+'. Delivery: '+slotName(o.slot)+'. Maal aane par list se mila lein.',(S.mode==='new'?'Namaste':''+NM()+'')+', we got your order '+o.id+'. '+o.n+' '+IT()+'s, total '+inr(o.total)+'. Delivery: '+slotName(o.slot)+'. Check the goods against the list on arrival.')+'</div></div><div style="height:20px"></div></div>'+
+  '<div class="dock"><button class="cta" data-a="go" data-s="orders">'+L('Order track karein','Track order')+'</button></div>'};
+
+var ST=[['Order mil gaya','Order received'],['Pack ho gaya','Packed'],['Raste mein hai','On the way'],['Dukaan pahunch gaya','Delivered']];
+function stName(i){return L(ST[i][0],ST[i][1])}
+V.orders=function(){var o=S.order,h='<div class="scr" id="scr"><div class="bar"><h3>'+L('Aapke order','Your orders')+'</h3></div>';
+  if(o&&!o.closed){h+='<div class="card" style="margin:0 16px;padding:16px 2px 4px"><div style="padding:0 14px 14px;display:flex;justify-content:space-between;align-items:center"><div><b>'+o.id+'</b><div class="mut" style="font-size:12.5px">'+o.n+' '+IT()+' · '+inr(o.total)+'</div></div><span class="chip p">'+slotName(o.slot)+'</span></div>'+
+    ST.map(function(s,i){var on=i<=o.status;return '<div class="track"><div class="ln"><span class="d '+(on?'on':'')+'"></span>'+(i<3?'<span class="v '+(i<o.status?'on':'')+'"></span>':'')+'</div><div class="tx '+(on?'':'off')+'">'+L(s[0],s[1])+(i===2&&o.status===2?'<small>'+L('Sonu delivery wala · 20 minute door','Sonu, delivery partner · 20 minutes away')+'</small>':'')+'</div></div>'}).join('')+'</div><div class="pad" style="margin-top:10px">'+
+    (o.status<2?'<button class="cta" style="margin-bottom:8px" data-a="addmore">'+L('इस ऑर्डर में और जोड़ें','Add more to this order')+'</button>':'')+(o.status<3?'<button class="cta ghost" data-a="next">'+L('Demo: agla step dikhayein','Demo: show next status')+'</button>':'<button class="cta" data-a="go" data-s="check">'+L('Maal list se mila lein','Check goods against the list')+'</button>')+'</div>'}
+  else h+='<div class="pad mut" style="margin-bottom:8px">'+L('Abhi koi order raste mein nahi hai.','No order on the way right now.')+'</div>';
+  h+='<div class="h">'+L('Purane order','Past orders')+'</div><div class="card" style="margin:0 16px">'+S.past.map(function(x){return '<div class="row"><div class="mid"><div class="nm">'+x.id+' · '+L(x.date,x.date)+'</div><div class="pk">'+x.n+' '+IT()+' · '+inr(x.total)+(x.credit?' · '+L('wapasi ','credit ')+inr(x.credit):'')+'</div></div><button class="addb" data-a="reorder">'+L('Dobara','Reorder')+'</button></div>'}).join('')+'</div><div style="height:80px"></div></div>';
+  return h+fab(84)+tabs('orders')};
+
+V.check=function(){var o=S.order,all=o.items.every(function(x){return o.chk[x.id]});
+  var bad=o.items.filter(function(x){return o.chk[x.id]&&o.chk[x.id]!=='ok'}).length;
+  var h=bar(L('Maal mila lein','Check your goods'),'orders')+'<div class="scr" id="scr" style="margin-top:-68px;padding-top:68px"><div class="pad"><button class="cta pu" data-a="scan" data-v="bill">'+L('Bill ki photo se mila lein','Match from a photo of the bill')+'</button><button class="cta ghost" style="margin-top:8px" data-a="allok">'+L('Sab theek hai','Everything is fine')+'</button><p class="mut" style="font-size:12.5px;margin:10px 0 12px">'+L('Ya ek ek karke dekhein. Kam aaya ya tuta ho toh bata dein, paisa khate se kat jayega.','Or go one by one. If something is short or damaged, tell us and it comes off your khata.')+'</p></div><div class="card" style="margin:0 16px">'+
+  o.items.map(function(x){var p=by(x.id),c=o.chk[x.id];return '<div class="row">'+art(p)+'<div class="mid"><div class="nm">'+nm(p)+'</div><div class="pk">'+x.q+' '+un(p,x.q)+' · '+pk(p)+'</div></div><div class="tri"><button class="'+(c==='ok'?'ok1':'')+'" data-a="chk" data-id="'+x.id+'" data-v="ok">'+L('Theek','OK')+'</button><button class="'+(c==='short'?'bad':'')+'" data-a="chk" data-id="'+x.id+'" data-v="short">'+L('Kam','Short')+'</button><button class="'+(c==='broken'?'bad':'')+'" data-a="chk" data-id="'+x.id+'" data-v="broken">'+L('Tuta','Damaged')+'</button></div></div>'}).join('')+'</div><div style="height:20px"></div></div>';
+  return h+'<div class="dock"><div class="t"><b>'+Object.keys(o.chk).length+' / '+o.items.length+'</b><span>'+(bad?bad+L(' mein dikkat',' with a problem'):L('mila liye','checked'))+'</span></div><button class="cta" data-a="closeorder" '+(all?'':'disabled')+'>'+L('Ho gaya','Done')+'</button></div>'};
+
+V.khata=function(){var k=S.khata,pct=Math.min(100,Math.round(k.used/k.limit*100));
+  return '<div class="scr" id="scr"><div class="bar"><h3>'+L('Khata','Khata')+'</h3></div><div class="kh"><div class="lb">'+L('IS MAHINE KA KHATA','THIS MONTH\'S KHATA')+qm('khata')+'</div><div class="amt">'+inr(k.used)+'</div><div class="sub">'+(k.used?L('30 November ko chukana hai','Due on 30 November'):L('Kuch baaki nahi','Nothing due'))+'</div><div class="meter"><i style="width:'+pct+'%"></i></div><div class="sub" style="margin-top:8px">'+inr(k.limit-k.used)+L(' limit baaki, kul ',' limit left of ')+inr(k.limit)+'</div></div>'+
+  '<div class="pad" style="margin-top:14px"><button class="cta" data-a="paykhata" '+(k.used?'':'disabled')+'>'+L('Abhi chukayein','Pay now')+'</button><div class="note">'+L('Demo: yeh distributor ke bahi khate jaisa hi hai. Mahine ke end mein ek baar chukana.','Demo: this works like the distributor\'s ledger. Settle once at month end.')+'</div></div>'+
+  '<div class="h">'+L('Len den','Entries')+'</div><div class="card" style="margin:0 16px">'+k.log.map(function(e){return '<div class="row"><div class="mid"><div class="nm">'+L(e.h,e.e)+'</div><div class="pk">'+L(e.t,e.t)+'</div></div><b class="'+(e.a<0?'gr':'')+'">'+(e.a>0?'+':'')+inr(e.a)+'</b></div>'}).join('')+'</div><div style="height:20px"></div></div>'+tabs('khata')};
+
+V.feed=function(){var m=[[L('Gehun','Wheat'),'2,480','+20'],[L('Chini','Sugar'),'4,150','+60'],[L('Arhar','Toor'),'11,900','+150'],[L('Sarson','Mustard'),'6,050','0'],[L('Chawal','Rice'),'3,900','+10']];
+  var a=by(1),mine=q(1)||a.last||5,have=36,pj=S.pool,now=have+(pj?mine:0);
+  return '<div class="scr" id="scr"><div class="bar"><h3>'+L('Thok ke mauke','Bulk deals')+'</h3></div>'+
+  '<div class="ai" style="margin-top:0"><div class="hd">'+ic('spark')+L('Mohalla pool','Mohalla pool')+'<span class="chip a" style="margin-left:auto">'+L('2 din baaki','2 days left')+'</span></div><div class="sg f">'+art(a)+'<div style="flex:1"><p style="margin-top:0"><b>'+nm(a)+':</b> '+L('Aapke ilaake ki 6 dukaanein mil kar le rahi hain. 60 bori hote hi sab ko ₹18 per bori kam.','6 shops near you are buying together. At 60 sacks everyone gets ₹18 off per sack.')+'</p><div class="meter"><i style="width:'+Math.min(100,Math.round(now/60*100))+'%"></i></div><p class="mut" style="font-size:12px;margin:6px 0 10px">'+now+' / 60 '+L('bori','sacks')+'</p><div class="bt">'+(pj?'<span class="chip g">'+L('Aap jud gaye · '+mine+' bori','You joined · '+mine+' sacks')+'</span>':'<button class="yes" data-a="pool">'+L('Apni '+mine+' bori jodein','Add my '+mine+' sacks')+'</button>')+'</div></div></div></div>'+
+  '<div class="ai"><div class="hd">'+ic('spark')+L('चाय कॉम्बो','Chai combo')+'<span class="chip g" style="margin-left:auto">'+L('₹120 की बचत','Save ₹120')+'</span></div><div class="sg"><p style="margin-top:0">'+L('रेड लेबल चाय, चीनी और पारले-जी साथ में लें तो बिल से ₹120 कम।','Take Red Label tea, sugar and Parle-G together and ₹120 comes off the bill.')+'</p><div style="display:flex;gap:8px;margin-bottom:12px">'+[14,2,16].map(function(i){return art(by(i))}).join('')+'</div><div class="bt">'+(tot().cb?'<span class="chip g">'+L('कॉम्बो लग गया','Combo applied')+'</span>':'<button class="yes" data-a="combo">'+L('कॉम्बो जोड़ें','Add the combo')+'</button>')+'</div></div></div>'+
+  '<div class="ai"><div class="hd">'+ic('spark')+L('Bhav lock','Price lock')+'</div><div class="sg f">'+art(by(2))+'<div style="flex:1"><p style="margin-top:0"><b>'+nm(by(2))+':</b> '+L('Mandi mein 3 din se tezi hai, bhav badh sakta hai. Aaj ke ₹2,150 par 7 din ke liye lock karein.','Mandi rates have risen 3 days running and may go up. Lock today\'s ₹2,150 for 7 days.')+'</p><div class="bt">'+(S.lockp?'<span class="chip g">'+L('Lock ho gaya · 2 December tak','Locked · until 2 December')+'</span>':'<button class="yes" data-a="lockp">'+L('Bhav lock karein','Lock the price')+'</button>')+'</div></div></div></div>'+
+  '<div class="ai"><div class="hd">'+ic('spark')+L('Shaadi season pack','Wedding season pack')+'</div><div class="sg"><p style="margin-top:0">'+L('December ke liye Kari ne 4 cheezein chuni hain: chini, sunflower tel, besan, haldi. Har ek 1 zyada.','Kari picked 4 items for December: sugar, sunflower oil, besan, haldi. One extra of each.')+'</p><div style="display:flex;gap:8px;margin-bottom:12px">'+[2,8,6,11].map(function(id){return art(by(id))}).join('')+'</div><div class="bt">'+(S.pack?'<span class="chip g">'+L('List mein jud gaya','Added to your list')+'</span>':'<button class="yes" data-a="pack">'+L('List mein jodein','Add to my list')+'</button>')+'</div></div></div>'+
+  '<div class="ai"><div class="hd">'+ic('phone')+L('Bina app ke order','Order without the app')+'</div><div class="sg"><p style="margin:0">'+L('Net nahi hai ya haath khaali nahi? Kirana Club ke number par missed call dein. Kari aapko wapas call karegi aur order likh legi.','No data or busy hands? Give Kirana Club a missed call. Kari calls you back and takes the order.')+'</p></div></div>'+
+  '<div class="ai"><div class="hd">'+ic('chart')+L('Chadhega ya girega?','Up or down?')+'</div><div class="sg"><p style="margin-top:0">'+L('Kal chini ka bhav kidhar jayega? Apna andaza batayein, sab ka dekhein.','Where will the sugar rate go tomorrow? Vote and see what other shopkeepers think.')+'</p>'+(S.vote?'<div class="meter" style="background:#E7DCFF"><i style="width:68%;background:var(--pu)"></i></div><p class="mut" style="font-size:12px;margin:6px 0 0">'+L('68% dukaandaar: chadhega · 32%: girega','68% of shopkeepers: up · 32%: down')+'</p>':'<div class="bt"><button class="yes" data-a="vote" data-v="up">'+L('Chadhega','Up')+'</button><button class="yes" data-a="vote" data-v="down">'+L('Girega','Down')+'</button></div>')+'</div></div>'+
+  '<div class="h">'+L('Aaj ke mandi bhav','Today\'s mandi rates')+' <small>'+L('Kanpur · ₹ per quintal','Kanpur · ₹ per quintal')+'</small></div><div class="card" style="margin:0 16px"><table class="m">'+m.map(function(r){return '<tr><td class="b">'+r[0]+'</td><td style="text-align:right">₹'+r[1]+'</td><td style="text-align:right" class="'+(r[2][0]==='+'?'':'gr')+'">'+(r[2]==='0'?'·':r[2])+'</td></tr>'}).join('')+'</table></div><div class="pad"><div class="note">'+L('Demo: pool, bhav lock aur season pack namoona hain. Inke liye business aur data dono chahiye.','Demo: pool, price lock and season pack are samples. Each needs a business decision and real data.')+'</div></div><div style="height:20px"></div></div>'+tabs('feed')};
+
+/* ---------- photo scans (simulated vision) ---------- */
+V.scan=function(){var s=S.scan,m=s.mode;if(s.st==='done')return scanDone();
+  var ill=m==='parchi'?'<div class="paper">Atta – 5 bori<br>Chini – 2<br>Tel 3 peti<br>Namak 2<br>Maggi 1 carton<br><span style="filter:blur(1.5px)">Bes~n 1</span></div>':
+   m==='shelf'?(s.st==='scanning'?'<div class="det" style="left:8%;top:34%;width:30%;height:17%"><b>Namak</b></div><div class="det" style="left:52%;top:22%;width:28%;height:15%"><b>Maggi</b></div><div class="det" style="left:34%;top:62%;width:30%;height:16%"><b>Vim Bar</b></div>':''):
+   '<div class="paper bill"><b>Kirana Club · Bill</b>'+S.order.items.slice(0,7).map(function(x){return nm(by(x.id))+' × '+x.q}).join('<br>')+'<br>…</div>';
+  var ti={parchi:L('Parchi ki photo','Photo of your list'),shelf:L('Shelf ki photo','Photo of the shelf'),bill:L('Bill ki photo','Photo of the bill')}[m];
+  var hint={parchi:L('Haath se likhi parchi camera ke saamne rakhein.','Hold your handwritten list in front of the camera.'),shelf:L('Shelf ki photo lein. Kari batayegi kya khatam ho raha hai.','Take a photo of the shelf. Kari will spot what is running low.'),bill:L('Delivery ke bill ki photo lein. Kari order se mila degi.','Take a photo of the delivery bill. Kari will match it to your order.')}[m];
+  return '<div class="cam"><div class="bar"><button class="back" data-a="scanback" aria-label="back">'+ic('back')+'</button><h3>'+ti+'</h3></div>'+(m==='bill'?'':'<div class="seg" style="margin:0 18px 6px"><button class="'+(m==='parchi'?'on':'')+'" data-a="scanmode" data-v="parchi">'+L('Parchi','Paper list')+'</button><button class="'+(m==='shelf'?'on':'')+'" data-a="scanmode" data-v="shelf">'+L('Shelf','Shelf')+'</button></div>')+'<div class="vf'+(m==='shelf'?'':' wood')+'"'+(m==='shelf'?' style="background-image:url(img/shop3.jpg)"':'')+'>'+ill+(s.st==='scanning'?'<div class="scanl"></div>':'')+'</div><p style="text-align:center;opacity:.8;margin:8px 18px 14px;font-size:13px">'+(s.st==='scanning'?L('Kari padh rahi hai…','Kari is reading…'):hint)+'</p><div style="padding:0 0 26px"><button class="shut" data-a="shoot" aria-label="shutter"></button></div></div>'};
+function scanDone(){var s=S.scan,m=s.mode,h,cta;
+  if(m==='parchi'){h='<div class="ai" style="margin-top:0"><div class="hd">'+ic('spark')+L('Kari ne parchi padh li','Kari read your list')+'</div>'+PAR.map(function(x){var p=by(x[0]);return '<div class="row">'+art(p)+'<div class="mid"><div class="nm">'+nm(p)+'</div><div class="pk">'+pk(p)+' · '+inr(p.price)+'</div></div><b>'+x[1]+' '+un(p,x[1])+'</b></div>'}).join('')+'</div><div class="ai"><div class="hd">'+ic('spark')+L('Ek line saaf nahi dikhi. Kaunsa hai?','One line was unclear. Which one is it?')+'</div><div class="sg"><div style="display:flex;gap:8px">'+[6,5].map(function(id){var p=by(id);return '<button class="pick '+(s.pick===id?'on':'')+'" data-a="scanpick" data-v="'+id+'">'+art(p)+nm(p)+'</button>'}).join('')+'</div></div></div>';
+    cta=(PAR.length+(s.pick?1:0))+L(' '+IT()+' list mein jodein',' '+IT()+'s, add to list')}
+  else if(m==='shelf'){h='<div class="ai" style="margin-top:0"><div class="hd">'+ic('spark')+L('Kari ko 3 cheezein kam dikhi','Kari spotted 3 items running low')+'</div>'+SHELF.map(function(x){var p=by(x[0]);return '<div class="row">'+art(p)+'<div class="mid"><div class="nm">'+nm(p)+'</div><div class="pr"><span class="chip r">'+L(x[1],x[2])+'</span></div></div><b>+1 '+un(p,1)+'</b></div>'}).join('')+'</div><div class="pad"><div class="note">'+L('Demo: photo se stock pehchanna ek AI model ka kaam hai. Yahan result namoona hai.','Demo: reading stock from a photo needs a vision model. The result here is a sample.')+'</div></div>';
+    cta=L('Teeno 1 zyada kar dein','Add 1 more of each')}
+  else{var o=S.order,bad=billMiss();h='<div class="ai" style="margin-top:0"><div class="hd">'+ic('spark')+L('Bill ke '+o.items.length+' mein se '+(o.items.length-1)+' '+IT()+' order se mile','Matched '+(o.items.length-1)+' of '+o.items.length+' '+IT()+'s on the bill')+'</div><div class="row">'+art(by(bad))+'<div class="mid"><div class="nm">'+nm(by(bad))+'</div><div class="pr"><span class="chip r">'+L('Bill mein nahi hai','Not on the bill')+'</span></div></div><b class="gr">'+inr(-by(bad).price)+'</b></div></div><div class="pad"><div class="note">'+L('Kari ise "kam aaya" likh degi aur paisa khate se kat jayega. Aap badal bhi sakte hain.','Kari will mark it as short and take the amount off your khata. You can still change it.')+'</div></div>';
+    cta=L('Theek hai, aage badhein','Looks right, continue')}
+  return bar(L('Kari ne kya dekha','What Kari saw'),S.scan.from)+'<div class="scr" id="scr" style="margin-top:-68px;padding-top:68px">'+h+'<div style="height:20px"></div></div><div class="dock"><button class="cta" data-a="scanapply">'+cta+'</button></div>'}
+function billMiss(){var o=S.order;return o.items.some(function(x){return x.id===18})?18:o.items[o.items.length-1].id}
+
+/* ---------- Kari call ---------- */
+V.call=function(){var c=S.call;
+  var L0=L;L=function(h,e){return S.lang==='en'?e:h};
+  var sug=c.first?[L('5 bori atta, 2 bori chini aur 3 peti tel','5 sacks atta, 2 sacks sugar and 3 cases oil'),L('2 peti namak aur 1 carton maggi','2 cases salt and 1 carton maggi'),L('Tel ka bhav kya hai?','What is the oil rate?'),L('Bas, ho gaya','That is all')]:
+   [L('Pichle mahine jaisa hi bhej do','Send the same as last month'),L('Atta 8 bori kar do aur 2 peti sarson tel','Make atta 8 sacks and 2 cases mustard oil'),L('Kari, koi sujhav hai?','Kari, any suggestions?'),L('Agle order mein Good Day jod do','Add Good Day to my next order'),L('Maggi hata do','Remove maggi'),L('Toor dal ka bhav kya hai?','What is the toor dal rate?'),L('Mera order kahan hai?','Where is my order?'),L('Bas, ho gaya','That is all')];
+  L=L0;
+  return '<div class="call"><div class="hd"><div class="av '+(c.lis?'lis':'')+'"><span>K</span></div><div class="nm">'+L('Kari','Kari')+'</div><div class="st">'+(c.lis?L('Sun rahi hoon…','Listening…'):L('Kirana Club ki order sahayak · ','Kirana Club order assistant · '))+'<span id="ct">'+(c.lis?'':'0:00')+'</span></div></div>'+
+  '<div class="log" id="log">'+c.log.map(function(m){return m.slip?slipHtml(m.slip):'<div class="bub '+m.w+'">'+m.t+'</div>'}).join('')+'</div>'+
+  '<div class="sug">'+sug.map(function(s){return '<button data-a="say" data-v="'+s.replace(/"/g,'&quot;')+'">'+(S.lang==='en'?s:tr(s))+'</button>'}).join('')+'</div>'+
+  '<div class="cin"><input id="ci" placeholder="'+L('Ya yahan likh dein…','Or type here…')+'"><button data-a="sendc" aria-label="send">'+ic('send')+'</button></div>'+
+  '<div class="cbtns"><button class="cb '+(S.sound?'on':'')+'" data-a="sound"><i>'+ic('vol')+'</i>'+L('Speaker','Speaker')+'</button><button class="cb mic '+(c.lis?'on':'')+'" data-a="mic"><i>'+ic('mic')+'</i>'+L('Bolein','Speak')+'</button><button class="cb end" data-a="endcall"><i>'+ic('x')+'</i>'+L('Call kaatein','End call')+'</button></div></div>'};
+function slipHtml(ids){return '<div class="slip"><div class="cap">'+L('Kari ki parchi · photo dekh kar pakka karein','Kari\'s slip · confirm by picture')+'</div>'+ids.map(function(id){var p=by(id);return '<div class="row">'+art(p)+'<div class="mid"><div class="nm">'+nm(p)+'</div><div class="pk">'+pk(p)+' · '+inr(p.price)+'</div></div>'+(q(id)?stp(id):'<span class="chip r">'+L('Hata diya','Removed')+'</span>')+'</div>'}).join('')+'</div>'}
+function startCall(first){
+  S.call={log:[],t0:Date.now(),lis:false,first:!!first,touched:{}};S.screen='call';render();
+  setTimeout(function(){kari(first?L('Namaste! Main Kari, Kirana Club se. Aapki pehli list saath mein banate hain. Boliye, dukaan ke liye kya kya chahiye?','Namaste! I am Kari from Kirana Club. Let us build your first list together. Tell me what the shop needs.'):
+    (S.order&&!S.order.closed?L('Namaste '+NM()+'! Aapka order ','Namaste '+NM()+'! Your order is ')+stName(S.order.status).toLowerCase()+L('. Aur kuch chahiye?','. Anything else?'):L('Namaste '+NM()+'! Pichle mahine jaisa hi bhejna hai, ya kuch badalna hai?','Namaste '+NM()+'! Same as last month, or shall we change something?')))},450);
+}
+function kari(t,slip){if(!S.call)return;S.call.log.push({w:'k',t:t});if(slip&&slip.length)S.call.log.push({slip:slip});if(S.screen==='call'){render();speak(t)}}
+function speak(t,force){try{if((!S.sound&&!force)||!window.speechSynthesis)return;speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t.replace(/₹/g,' rupaye '));var vs=speechSynthesis.getVoices();var v=vs.filter(function(x){return x.lang===(S.lang==='en'?'en-IN':'hi-IN')})[0]||vs.filter(function(x){return x.lang==='en-IN'})[0];if(v)u.voice=v;u.lang=v?v.lang:'en-IN';u.rate=1.02;speechSynthesis.speak(u)}catch(e){}}
+function heard(text){
+  if(!text.trim()||!S.call)return;S.call.log.push({w:'u',t:S.lang==='en'?text:tr(text)});render();
+  setTimeout(function(){answer(text)},550);
+}
+function findP(tok){var r=null;P.some(function(p){if(p.kw.indexOf(tok)>=0){r=p;return true}});return r}
+function answer(text){
+  if(!S.call)return;
+  var s=' '+text.toLowerCase().replace(/[,.?!]/g,' ')+' ';for(var k in PHRASES)s=s.split(k).join(PHRASES[k]);
+  var tk=s.split(/\s+/).filter(Boolean),has=function(a){return a.some(function(w){return tk.indexOf(w)>=0})};
+  if(has(['kahan','kaha','where','status','कहाँ'])){var o=S.order;return kari(o&&!o.closed?L('Aapka order '+o.id+' abhi "'+stName(o.status)+'" par hai. Delivery: '+slotName(o.slot)+'.','Your order '+o.id+' is at "'+stName(o.status)+'". Delivery: '+slotName(o.slot)+'.'):L('Abhi koi order raste mein nahi hai. Naya order banayein?','No order is on the way. Shall we start a new one?'))}
+  if(has(['pichle','pichla','same','last','jaisa'])&&S.mode==='old'){prefillAll();var t=tot();S.call.pend=function(){S.cart[14]=Math.max(q(14),1);S.swapped=true;if(S.list.indexOf(14)<0)S.list.push(14);kari(L('Rakh diya: 1 peti Red Label Chai. Aur kuch?','Added: 1 case Red Label Chai. Anything else?'),[14])};return kari(L('Theek hai. Pichle mahine ki poori list daal di: '+t.c+' '+IT()+', kul '+inr(t.t)+'. Tata Tea Gold abhi stock mein nahi hai, uski jagah Red Label rakh doon?','Done. I have put in all of last month\'s list: '+t.c+' '+IT()+'s, total '+inr(t.t)+'. Tata Tea Gold is out of stock, shall I use Red Label instead?'))}
+  var yes=has(['haan','ha','yes','ji','theek','rakh','kar','jod','हाँ'])&&tk.length<=4&&!has(['hata','hatao','nahi']),no=has(['nahi','no','mat','rehne'])&&tk.length<=4;
+  if(S.call.pend&&(yes||no)){var pf=S.call.pend;S.call.pend=null;if(yes)return pf();return kari(L('Theek hai, rehne dete hain. Aur kuch?','Okay, we will leave it. Anything else?'))}
+  if(has(['sujhav','suggest','suggestion','suggestions','salah'])){var so=sugOpen();if(S.mode!=='old'||!so.length)return kari(L('Abhi koi naya sujhav nahi hai. List theek lag rahi hai.','No new suggestions right now. The list looks fine.'));S.call.pend=function(){applySug(so[0]);kari(L('Kar diya. Aur kuch?','Done. Anything else?'),[so[0].pid])};return kari(L('Mere paas '+so.length+' sujhav hain. Pehla: '+sugText(so[0])+' Kar doon?','I have '+so.length+' suggestions. First: '+sugText(so[0])+' Shall I?'))}
+  if(has(['bas','done','enough','all','itna'])){if(!S.call.nudged){S.call.nudged=true;var ms=missing()[0],s0=S.mode==='old'?sugOpen()[0]:null;if(ms){S.call.pend=function(){S.cart[ms.id]=ms.last0;kari(L('Jod diya: '+ms.last0+' '+ms.u+' '+nm(ms)+'. Aur kuch?','Added: '+ms.last0+' '+un(ms,ms.last0)+' '+nm(ms)+'. Anything else?'),[ms.id])};return kari(L('Ek baat. Aap har mahine '+nm(ms)+' lete hain, is baar list mein nahi hai. Jod doon?','One thing. You take '+nm(ms)+' every month and it is not in the list this time. Shall I add it?'))}if(s0){S.call.pend=function(){applySug(s0);kari(L('Kar diya. Aur kuch?','Done. Anything else?'),[s0.pid])};return kari(L('Ek sujhav. '+sugText(s0)+' Kar doon?','One suggestion. '+sugText(s0)+' Shall I?'))}}var t2=tot();return kari(L('Theek hai. Aapki list mein '+t2.c+' '+IT()+' hain, kul '+inr(t2.t)+'. Call kaat kar ek baar dekh lein, phir "Order pakka karein" dabayein. Main khud order pakka nahi karti.','Okay. Your list has '+t2.c+' '+IT()+'s, total '+inr(t2.t)+'. End the call, review once, then tap "Place order". I never place the order myself.'))}
+  var price=has(['bhav','bhaav','rate','price','daam','kitne','kitna']),rem=has(['hata','hatao','remove','nahi','mat','cancel','हटा']);
+  var got=[],pend=null;
+  for(var i=0;i<tk.length;i++){var w=tk[i],nx=tk[i+1];
+    var isNum=/^\d+$/.test(w)?+w:(NUM[w]&&(w!=='do'||(nx&&(UNITW.indexOf(nx)>=0||findP(nx))))?NUM[w]:null);
+    if(isNum){pend=isNum;continue}
+    var p=findP(w);if(!p)continue;var n=pend;pend=null;
+    if(n===null&&nx){var m=/^\d+$/.test(nx)?+nx:(nx!=='do'?NUM[nx]:null);if(m){n=m;i++}}
+    got.push({p:p,n:n});
+  }
+  if(got.length&&has(['agle','agla','yaad','next','note','remember'])){var yi=[];got.forEach(function(g){var gp=g.p.oos?by(g.p.alt):g.p;addRun(gp.id,'voice');if(S.list.indexOf(gp.id)<0)yi.push(gp.id);else yi.push(gp.id)});return kari(L('याद लिस्ट में लिख लिया: ','Saved to your Yaad List: ')+yi.map(function(i){return nm(by(i))}).join(', ')+L('। अगले ऑर्डर में जुड़ जाएगा। और कुछ?','. It will join your next order. Anything else?'),yi)}
+  if(!got.length)return kari(L('Maaf kijiye, samajh nahi aaya. Ek baar phir boliye, jaise "2 bori atta aur 1 peti tel".','Sorry, I did not catch that. Say it once more, like "2 sacks atta and 1 case oil".'));
+  if(price){var p0=got[0].p;return kari(L(nm(p0)+' '+p0.pk+' ka aaj ka bhav '+inr(p0.price)+' per '+p0.u+' hai.','Today '+nm(p0)+' '+p0.pk+' is '+inr(p0.price)+' per '+un(p0,1)+'.')+(p0.delta?L(' Pichle mahine se '+inr(Math.abs(p0.delta))+(p0.delta<0?' sasta.':' mehenga.'),' That is '+inr(Math.abs(p0.delta))+(p0.delta<0?' cheaper':' costlier')+' than last month.'):''))}
+  var said=[],ids=[];
+  got.forEach(function(g){var p=g.p;if(p.oos){p=by(p.alt)}
+    if(rem){delete S.cart[p.id];said.push(nm(p));ids.push(p.id);return}
+    var n=g.n||Math.max(q(p.id),1);S.cart[p.id]=n;if(S.list.indexOf(p.id)<0)S.list.push(p.id);said.push(n+' '+un(p,n)+' '+nm(p));ids.push(p.id)});
+  if(rem)return kari(L('Hata diya: '+said.join(', ')+'. Aur kuch?','Removed: '+said.join(', ')+'. Anything else?'),ids);
+  kari(L('Likh liya: '+said.join(', ')+'. Photo dekh kar pakka kar lein. Aur kuch?','Noted: '+said.join(', ')+'. Check the pictures to confirm. Anything else?'),ids);
+}
+var rec=null;
+function mic(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast(L('Yahan mic nahi chal raha. Neeche se chunein ya likhein.','Mic is not available here. Tap a phrase or type.'));return}
+  if(S.call.lis&&rec){rec.stop();return}
+  try{if(window.speechSynthesis)speechSynthesis.cancel();rec=new SR();rec.lang=S.lang==='en'?'en-IN':'hi-IN';rec.interimResults=false;
+    rec.onresult=function(e){var t=e.results[0][0].transcript;S.call.lis=false;heard(t)};
+    rec.onerror=function(){S.call.lis=false;render();toast(L('Awaaz nahi aayi. Phir se bolein.','Did not hear you. Try again.'))};
+    rec.onend=function(){if(S.call&&S.call.lis){S.call.lis=false;render()}};
+    S.call.lis=true;render();rec.start()}catch(e){S.call.lis=false;render()}
+}
+
+/* ---------- actions ---------- */
+function place(){var t=tot(),items=Object.keys(S.cart).map(Number).filter(q).map(function(id){return{id:id,q:S.cart[id]}});
+  items.forEach(function(x){by(x.id).ago=0});S.run=S.run.filter(function(r){return !items.some(function(x){return x.id===r.id})});S.trim=[];
+  if(S.adding&&S.order&&!S.order.closed){var o=S.order;items.forEach(function(x){var e=o.items.filter(function(y){return y.id===x.id})[0];if(e)e.q+=x.q;else o.items.push(x)});o.total+=t.t;o.n=o.items.length;o.sv=(o.sv||0)+t.s+t.cb+t.w;o.m=(o.m||0)+t.m;if(o.pay==='khata'){S.khata.used+=t.t;S.khata.log.unshift({t:'25 Nov',h:'Order '+o.id+' mein joda',e:'Added to order '+o.id,a:t.t})}S.wallet-=t.w;S.adding=false;S.cart={};S.screen='orders';render();toast(L(items.length+' आइटम ऑर्डर में जुड़ गए',items.length+' items added to your order'));return}
+  if(S.editing&&S.order&&S.order.pay==='khata'){S.khata.used-=S.order.total;S.khata.log.shift()}
+  S.order={id:S.editing&&S.order?S.order.id:'KC-1125',items:items,n:t.c,total:t.t,pay:S.pay,slot:S.slot,status:0,chk:{},until:Date.now()+120000,closed:false,sv:t.s+t.cb+t.w,m:t.m};
+  if(S.pay==='khata'){S.khata.used+=t.t;S.khata.log.unshift({t:'25 Nov',h:'Order '+S.order.id,e:'Order '+S.order.id,a:t.t})}
+  S.wallet-=t.w;S.editing=false;S.cart={};S.screen='placed';S.done=false;render();
+}
+function closeOrder(){var o=S.order,credit=0,bad=0;o.items.forEach(function(x){if(o.chk[x.id]!=='ok'){credit+=by(x.id).price;bad++}});
+  if(credit&&o.pay==='khata'){S.khata.used-=credit;S.khata.log.unshift({t:'26 Nov',h:bad+' '+IT()+' ki wapasi',e:'Credit for '+bad+' '+IT()+'s',a:-credit})}
+  o.closed=true;S.past.unshift({id:o.id,date:'25 Nov',total:o.total,n:o.n,credit:credit});
+  o.items.forEach(function(x){by(x.id).last=x.q});P.forEach(function(p){if(!o.items.some(function(x){return x.id===p.id}))p.last=p.last0&&S.mode==='old'&&S.list.indexOf(p.id)>=0?0:0});
+  S.list=o.items.map(function(x){return x.id});prefill();S.done=true;S.screen='home';render();
+  toast(credit?inr(credit)+L(' khate se kam kar diye',' taken off your khata'):L('Order poora hua. List save ho gayi.','Order complete. List saved.'));
+}
+function ensureOrder(st){if(!S.order||S.order.closed){if(!tot().c){if(!S.list.length)S.list=STARTER.slice();prefill();if(!tot().c)S.list.forEach(function(id){S.cart[id]=1})}place()}if(st!==undefined)S.order.status=Math.max(S.order.status,st)}
+function jump(k){
+  if(k==='lock'){fresh('old',S.persona==='imran'?'imran':'ramesh')}
+  else if(k==='home'){S.screen='home'}
+  else if(k==='call'){startCall(S.mode==='new'&&!S.past.length&&!S.list.length);return}
+  else if(k==='scan'){S.scan={mode:'parchi',st:'cam',pick:null,from:'home'};S.screen='scan'}
+  else if(k==='review'){if(!tot().c){if(!S.list.length)S.list=STARTER.slice();prefill();if(!tot().c)S.list.forEach(function(id){S.cart[id]=1})}S.screen='review'}
+  else if(k==='placed'){ensureOrder();S.screen='placed'}
+  else if(k==='orders'){ensureOrder(2);S.screen='orders'}
+  else if(k==='check'){ensureOrder(3);S.screen='check'}
+  else if(k==='khata'){S.screen='khata'}
+  else if(k==='feed'){S.screen='feed'}
+  else if(k==='cap'){S.screen='home';S.cap=true}
+  else if(k==='item'){S.screen='home';S.item=1}
+  else if(k==='bundle'){S.screen='home'}
+  else if(k==='next'){ensureOrder(3);S.order.items.forEach(function(x){S.order.chk[x.id]='ok'});closeOrder();return}
+  render();
+}
+document.addEventListener('click',function(e){
+  var b=e.target.closest('[data-a]');if(!b)return;var a=b.dataset.a,id=+b.dataset.id,v=b.dataset.v;
+  if(a==='go'){if(S.screen==='call')endCall(true);S.screen=b.dataset.s;S.q='';render()}
+  else if(a==='inc'){S.cart[id]=q(id)+1;if(S.list.indexOf(id)<0&&S.screen!=='call')S.list.push(id);render()}
+  else if(a==='dec'){S.cart[id]=q(id)-1;if(S.cart[id]<=0)delete S.cart[id];render()}
+  else if(a==='swap'){var p=by(id);S.cart[p.alt]=Math.max(q(p.alt),p.last||1);S.swapped=true;render();toast(L('Red Label Chai rakh di','Swapped to Red Label Chai'))}
+  else if(a==='cat'){S.cat=v;render();var sc=document.getElementById('scr');if(sc)sc.scrollTop=Math.min(sc.scrollTop,230)}
+  else if(a==='reset'){prefill();S.swapped=false;render();toast(L('Pichle mahine jaisi kar di','Back to last month'))}
+  else if(a==='call'){startCall(S.mode==='new'&&!S.list.length)}
+  else if(a==='say'){heard(v)}
+  else if(a==='sendc'){var i=document.getElementById('ci');heard(i.value)}
+  else if(a==='mic'){mic()}
+  else if(a==='sound'){S.sound=!S.sound;if(!S.sound&&window.speechSynthesis)speechSynthesis.cancel();render()}
+  else if(a==='endcall'){endCall()}
+  else if(a==='pay'){S.pay=v;render()}
+  else if(a==='slot'){S.slot=+v;render()}
+  else if(a==='place'){place()}
+  else if(a==='editorder'){if(Date.now()>S.order.until)return;S.cart={};S.order.items.forEach(function(x){S.cart[x.id]=x.q});S.editing=true;S.screen='review';render()}
+  else if(a==='next'){S.order.status++;render();if(S.order.status===3)toast(L('Maal pahunch gaya','Goods delivered'))}
+  else if(a==='chk'){S.order.chk[id]=v;render()}
+  else if(a==='allok'){S.order.items.forEach(function(x){S.order.chk[x.id]='ok'});render()}
+  else if(a==='closeorder'){closeOrder()}
+  else if(a==='reorder'){prefill();S.screen='home';render();toast(L('List bhar di','List filled'))}
+  else if(a==='paykhata'){S.khata.log.unshift({t:'25 Nov',h:'UPI se chukaya',e:'Paid by UPI',a:-S.khata.used});S.khata.used=0;render();toast(L('Khata chukta ho gaya','Khata settled'))}
+  else if(a==='oblang'){S.obLang=v;S.lang=v==='en'?'en':'hi';render();if(v==='dv'||v==='gu')toast('This demo has English and Hindi ready')}
+  else if(a==='sendotp'){var ph=document.getElementById('ph').value.replace(/\D/g,'');if(ph.length!==10){toast(L('10 ank ka number daalein','Enter a 10 digit number'));return}S.phone=ph;S.screen='otp';render()}
+  else if(a==='fillotp'){document.getElementById('otp').value='4821'}
+  else if(a==='verify'){if(document.getElementById('otp').value.length!==4){toast(L('Code daalein ya SMS se bharein','Enter the code or fill from SMS'));return}S.screen='shop';render()}
+  else if(a==='stype'){S.shop=document.getElementById('shop').value;S.shopType=v;render()}
+  else if(a==='saveshop'){var sv=document.getElementById('shop').value.trim();if(!sv){toast(L('Dukaan ka naam likhein','Enter the shop name'));return}S.shop=sv;S.screen='first';render()}
+  else if(a==='firstcall'){startCall(true)}
+  else if(a==='firststarter'){S.list=STARTER.slice();S.list.forEach(function(x){S.cart[x]=1});S.screen='home';render();toast(L('Shuruaati list taiyaar hai','Starter list is ready'))}
+  else if(a==='firstphoto'){S.scan={mode:'parchi',st:'cam',pick:null,from:'first'};S.screen='scan';render()}
+  else if(a==='sug'){applySug(SUG.filter(function(s){return s.k===v})[0]);render();toast(L('Sujhav laga diya','Suggestion applied'))}
+  else if(a==='sugno'){S.sug[v]='off';render()}
+  else if(a==='sugall'){sugOpen().forEach(applySug);render();toast(L('Sab sujhav laga diye','All suggestions applied'))}
+  else if(a==='addlast'){S.cart[id]=by(id).last0;render()}
+  else if(a==='auto'){S.auto=!S.auto;render();toast(S.auto?L('Autopilot chalu. 25 December ko list aayegi.','Autopilot on. Your list arrives on 25 December.'):L('Autopilot band','Autopilot off'))}
+  else if(a==='scan'){S.scan={mode:v,st:'cam',pick:null,from:S.screen};S.screen='scan';render()}
+  else if(a==='scanmode'){S.scan.mode=v;S.scan.st='cam';render()}
+  else if(a==='scanback'){S.screen=S.scan.from;render()}
+  else if(a==='shoot'){if(S.scan.st!=='cam')return;S.scan.st='scanning';render();setTimeout(function(){if(S.scan&&S.screen==='scan'){S.scan.st='done';render()}},1700)}
+  else if(a==='scanpick'){S.scan.pick=+v;render()}
+  else if(a==='scanapply'){var sm=S.scan.mode;
+    if(sm==='parchi'){var its=PAR.slice();if(S.scan.pick)its.push([S.scan.pick,1]);its.forEach(function(x){S.cart[x[0]]=x[1];if(S.list.indexOf(x[0])<0)S.list.push(x[0])});S.screen='home';render();toast(L('Parchi ke '+its.length+' '+IT()+' list mein aa gaye','Added '+its.length+' '+IT()+'s from your list'))}
+    else if(sm==='shelf'){SHELF.forEach(function(x){S.cart[x[0]]=q(x[0])+1;if(S.list.indexOf(x[0])<0)S.list.push(x[0])});S.screen='home';render();toast(L('3 item 1 zyada kar diye','Added 1 more of 3 items'))}
+    else{var bm=billMiss();S.order.items.forEach(function(x){S.order.chk[x.id]=x.id===bm?'short':'ok'});S.screen='check';render()}}
+  else if(a==='vote'){S.vote=v;render()}
+  else if(a==='wal'){S.ex='wallet';render()}
+  else if(a==='ex'){S.ex=v;render()}
+  else if(a==='exclose'){S.ex=null;S.cap=false;S.item=null;if(window.speechSynthesis)speechSynthesis.cancel();render()}
+  else if(a==='exsay'){speak(EX[S.ex][1][S.lang==='en'?1:0],true)}
+  else if(a==='clear'){S.cart={};render()}
+  else if(a==='sugshow'){S.sugShow=true;render()}
+  else if(a==='pool'){S.pool=true;render();toast(L('Aap pool mein jud gaye','You joined the pool'))}
+  else if(a==='lockp'){S.lockp=true;render();toast(L('Chini ka bhav lock ho gaya','Sugar price locked'))}
+  else if(a==='pack'){S.pack=true;[2,8,6,11].forEach(function(x){S.cart[x]=q(x)+1;if(S.list.indexOf(x)<0)S.list.push(x)});render();toast(L('4 item 1 zyada kar diye','Added 1 more of 4 items'))}
+  else if(a==='persona'){fresh(v==='sunita'?'new':'old',v);render()}
+  else if(a==='cap'){S.cap=true;render();var ci=document.getElementById('capi');if(ci)ci.focus()}
+  else if(a==='capchip'){addRun(id,'note');S.cap=false;render();toast(L('याद लिस्ट में जुड़ गया','Added to your Yaad List'))}
+  else if(a==='capadd'||a==='caplost'){var cv=(document.getElementById('capi').value||'').toLowerCase(),cs=' '+cv+' ';for(var ck in PHRASES)cs=cs.split(ck).join(PHRASES[ck]);var hit=[];cs.split(/[\s,]+/).filter(Boolean).forEach(function(w){var fp=findP(w)||P.filter(function(x){return w.length>2&&(x.n+' '+(x.en||'')+' '+PH[x.id]).toLowerCase().indexOf(w)>=0})[0];if(fp&&hit.indexOf(fp)<0)hit.push(fp)});
+    if(!hit.length){toast(L('आइटम नहीं मिला। नीचे से चुनें।','Item not found. Pick one below.'));return}
+    hit.forEach(function(fp){var tp=fp.oos?by(fp.alt):fp;addRun(tp.id,a==='caplost'?'ask':'note');if(a==='caplost')S.lost[tp.id]=(S.lost[tp.id]||0)+1});S.cap=false;render();
+    var l0=hit[0].oos?by(hit[0].alt):hit[0];toast(a==='caplost'&&S.lost[l0.id]>=2?L(S.lost[l0.id]+' बार माँगा गया। याद लिस्ट में है।','Asked for '+S.lost[l0.id]+' times. It is on your Yaad List.'):L('याद लिस्ट में जुड़ गया','Added to your Yaad List'))}
+  else if(a==='item'){S.item=id;render()}
+  else if(a==='buyagain'){var bp=by(id);S.cart[id]=Math.max(q(id),bp.last||1);if(S.list.indexOf(id)<0)S.list.push(id);S.item=null;render();toast(L('कार्ट में जुड़ गया','Added to cart'))}
+  else if(a==='runadd'){addRun(id,'note');S.item=null;render();toast(L('याद लिस्ट में जुड़ गया','Added to your Yaad List'))}
+  else if(a==='bun'){var bb=bundles().filter(function(x){return x.k===v})[0];bb.it.forEach(function(i){S.cart[i[0]]=Math.max(q(i[0]),i[1]);if(S.list.indexOf(i[0])<0)S.list.push(i[0])});render();toast(L('बंडल कार्ट में जुड़ गया','Bundle added to cart'))}
+  else if(a==='savebun'){S.myb.push(Object.keys(S.cart).map(Number).filter(q).map(function(i){return[i,S.cart[i]]}));render();toast(L('बंडल बन गया। लिस्ट के ऊपर मिलेगा।','Bundle saved. Find it above your list.'))}
+  else if(a==='combo'){[14,2,16].forEach(function(i){if(!q(i))S.cart[i]=1;if(S.list.indexOf(i)<0)S.list.push(i)});render();toast(L('चाय कॉम्बो जुड़ गया · ₹120 की बचत','Chai combo added · ₹120 saved'))}
+  else if(a==='fill'){S.cart[id]=+v;render();toast(L('थोक भाव लग गया','Bulk price unlocked'))}
+  else if(a==='bud'){var B=+v;if(tot().t<=B){toast(L('ऑर्डर पहले से बजट में है','Your order is already within this budget'));return}
+    var sc={ok:0,soon:1,'':1.5,now:2},ids2=Object.keys(S.cart).map(Number).filter(q).sort(function(x,y){var px=by(x),py=by(y);return (sc[band(px)]-sc[band(py)])||((px.mrp-px.price)/px.price-(py.mrp-py.price)/py.price)});
+    S.trim=[];S.bud=B;while(tot().t>B&&ids2.length>1){var ti=ids2.shift();S.trim.push([ti,S.cart[ti]]);delete S.cart[ti];addRun(ti,'budget',true)}render();toast(L(S.trim.length+' आइटम अगली बार के लिए रोके',S.trim.length+' items held for next time'))}
+  else if(a==='unbud'){S.trim.forEach(function(x){S.cart[x[0]]=x[1];S.run=S.run.filter(function(r){return !(r.id===x[0]&&r.w==='budget')})});S.trim=[];render()}
+  else if(a==='addmore'){S.adding=true;S.cart={};S.screen='home';render();toast(L('जो जोड़ना है चुनें, फिर कार्ट देखें','Pick what to add, then view cart'))}
+  else if(a==='tour'){tourGo(+v)}
+  else if(a==='wclose'){var ww=document.getElementById('welcome');if(ww)ww.remove()}
+  else if(a==='jump'){TI=-1;jump(v)}
+  else if(a==='mode'){fresh(v,v==='new'?'sunita':S.persona==='imran'?'imran':'ramesh');render()}
+  else if(a==='setlang'){S.lang=v;render()}
+});
+function endCall(silent){if(window.speechSynthesis)speechSynthesis.cancel();if(rec){try{rec.abort()}catch(e){}}var first=S.call&&S.call.first;S.call=null;if(silent)return;var c=tot().c;
+  if(S.mode==='new'&&!S.list.length){S.screen='first';render();return}
+  S.screen=c?'review':'home';render();if(c)toast(L('Kari ki parchi list mein jud gayi','Kari\'s slip is added to your list'))}
+document.addEventListener('input',function(e){if(e.target.id==='sq'){S.q=e.target.value;document.getElementById('lw').innerHTML=listHtml()}});
+document.addEventListener('keydown',function(e){if(TI>=0&&!/INPUT|TEXTAREA/.test(e.target.tagName)){if(e.key==='ArrowRight')tourGo(TI+1);else if(e.key==='ArrowLeft'&&TI>0)tourGo(TI-1)}
+  if(e.key==='Enter'&&e.target.id==='ci'){heard(e.target.value)}});
+
+/* ---------- guided tour for reviewers ---------- */
+var TI=-1,TS=[
+ {t:'The reminder',d:'Kari has the order ready before he opens the app. Memory is no longer the trigger.',sel:'.notif',run:function(){fresh('old','ramesh')}},
+ {t:'Due Now: one number, one button',d:'Only items that are running out are prefilled, from each item\'s own buying rhythm.',sel:'.remind',run:function(){S.screen='home'}},
+ {t:'Yaad List',d:'Needs captured during the month are already in the basket, each showing where it came from.',sel:'#scr .ai',run:function(){S.screen='home'}},
+ {t:'Capture in one tap',d:'Type, pick a chip, or mark "customer asked, I had none". Try it.',sel:'.sheet',run:function(){S.screen='home';S.cap=true}},
+ {t:'My Bundles',d:'A whole set in one tap. Any cart can be saved as a bundle.',sel:'.hs',run:function(){S.screen='home'}},
+ {t:'Item History',d:'Last three buys, the price each time, and when it is next due.',sel:'.sheet',run:function(){S.screen='home';S.item=1}},
+ {t:'Three bands, real units',d:'Due now, Due soon, Still stocked. Price pill, MRP, margin and bulk nudges on every row.',sel:'#lw .card',run:function(){S.screen='home'}},
+ {t:'Kari, as a phone call',d:'Tap a sample line under the chat. Kari writes a slip with pictures and never places the order.',sel:'.sug',run:function(){startCall(false)}},
+ {t:'Cart: Kari double-checks',d:'Fill-up nudge, budget mode, schemes and forgotten items, in one card.',sel:'#scr .ai',run:function(){if(!tot().c)prefill();S.screen='review'}},
+ {t:'Savings, margin and payment',d:'What he saves and what he earns stay visible to the last tap. Khata mirrors month-end credit.',sel:'.savebar',run:function(){if(!tot().c)prefill();S.screen='review'}},
+ {t:'Order placed',d:'What he saved, an ETA, a 2 minute edit window and a WhatsApp copy.',sel:'#scr .card',run:function(){ensureOrder();S.screen='placed'}},
+ {t:'Track and add more',d:'Four plain statuses. More items can join the same delivery until dispatch.',sel:'[data-a=addmore]',run:function(){ensureOrder();S.order.status=0;S.screen='orders'}},
+ {t:'Goods Check',d:'The list he never had. Short or damaged items come straight off the khata.',sel:'#scr .card',run:function(){ensureOrder(3);S.screen='check'}},
+ {t:'Deals, the later bets',d:'Chai combo, mohalla pool, price lock and the rate poll. Shown as samples.',sel:'#scr .ai',run:function(){S.screen='feed'}},
+ {t:'Hindi, one tap away',d:'Every screen in Hindi script. A "?" explains each new idea and can read it aloud.',sel:'.remind',run:function(){fresh('old','ramesh');S.lang='hi';S.screen='home'}},
+ {t:'Three personas',d:'Switch to Sunita (new shop) or Imran (bulk buyer) on the right. That is the end of the tour.',sel:null,run:function(){fresh('old','ramesh');S.lang='en';S.screen='home'}}];
+function tourGo(i){var w=document.getElementById('welcome');if(w)w.remove();
+  if(S.call)endCall(true);S.cap=false;S.item=null;S.ex=null;
+  if(i<0||i>=TS.length){TI=-1;render();return}
+  TI=i;TS[i].run();S.sound=false;if(S.screen!=='call')render();else renderSide()}
+function spot(){if(TI<0||!TS[TI].sel)return;var e=document.querySelector('#app '+TS[TI].sel);if(!e)return;e.classList.add('spot');var sc=document.getElementById('scr');if(sc&&sc.contains(e)){var r=e.getBoundingClientRect(),c=sc.getBoundingClientRect();sc.scrollTop+=r.top-c.top-Math.max(20,(c.height-r.height)/2)}}
+function tourHtml(){return TI>=0?'<div class="tour"><small>GUIDED TOUR · '+(TI+1)+' OF '+TS.length+'</small><b>'+TS[TI].t+'</b><p>'+TS[TI].d+'</p><div><button data-a="tour" data-v="'+(TI-1)+'" '+(TI?'':'disabled')+'>Back</button><button class="nx" data-a="tour" data-v="'+(TI+1)+'">'+(TI===TS.length-1?'Finish':'Next')+'</button><button data-a="tour" data-v="-1">Exit</button></div></div>':'<button class="tourb" data-a="tour" data-v="0">Start the guided tour · 2 minutes</button>'}
+function welcome(){var d=document.createElement('div');d.id='welcome';d.innerHTML='<div class="bx"><small>KIRANA CLUB · UI/UX CASE STUDY</small><h2>Restocking for Ramesh</h2><p>This is a live prototype, not a set of screenshots. Everything inside the phone can be tapped.</p><ul><li><b>The idea:</b> restocking is a loop: capture, compose, confirm, check.</li><li><b>Three personas:</b> an old user, a new shop and a bulk buyer.</li><li><b>Two languages:</b> English and Hindi.</li></ul><button class="go" data-a="tour" data-v="0">Start the guided tour · 2 minutes</button><button class="sk" data-a="wclose">Explore on my own</button><a class="sk" href="deck.html" style="margin-top:6px;text-align:center">Read the case study deck</a></div>';document.body.appendChild(d)}
+
+/* ---------- side panels + render ---------- */
+var J=[['lock','Reminder','A nudge before month end, so memory is not the trigger.'],['home','Due Now basket','Only what is running out is prefilled, from each item\'s own rhythm. Bundles add a set in one tap.'],['cap','Yaad List','Capture a need the moment it appears. It joins the next order by itself.'],['call','Call Kari','Replaces the distributor call. Speaks Hindi or English, reads back, confirms by picture.'],['scan','Photo instead of typing','Kari reads a handwritten list or spots gaps on a shelf.'],['review','Review and pay','Kari checks for forgotten items. Khata keeps the month-end credit habit.'],['placed','Order confirmed','ETA, 2 minute edit window, WhatsApp copy.'],['orders','Tracking','Four plain statuses. Kari can answer "mera order kahan hai".'],['check','Check the goods','A photo of the bill is matched to the order. Short items come off the khata.'],['khata','Khata','Running dues, limit, one settlement a month.'],['feed','Thok ke mauke','Pool with nearby shops, lock a price, season pack, missed-call order.'],['next','Next month, on autopilot','This order becomes the next list. Kari can send it for approval each month.']];
+function curStep(){var s=S.screen;if(S.cap)return 'cap';if(s==='home'&&S.done)return 'next';if(['lang','phone','otp','shop','first'].indexOf(s)>=0)return 'onb';return s}
+function renderSide(){
+  var cur=curStep();
+  document.getElementById('journey').innerHTML='<h1>Restocking for Ramesh</h1><p>Live prototype v2. Every step is clickable in the phone. Jump to any step here.</p>'+tourHtml()+'<h2>Journey, end to end</h2>'+
+   (S.mode==='new'?'<button class="jstep '+(cur==='onb'?'on':'')+'" data-a="mode" data-v="new"><span class="n">0</span><span><b>First time setup</b><span>Language, number, shop, then a first list by call, photo or starter.</span></span></button>':'')+
+   J.map(function(j,i){if(S.mode==='new'&&j[0]==='lock')return '';return '<button class="jstep '+(cur===j[0]?'on':'')+'" data-a="jump" data-v="'+j[0]+'"><span class="n">'+(i+1)+'</span><span><b>'+j[1]+'</b><span>'+j[2]+'</span></span></button>'}).join('');
+  document.getElementById('ctrl').innerHTML='<h2 style="margin-top:0">Persona</h2>'+[['ramesh','R','Ramesh, 43 · old user','Monthly restock, same list, pays on khata.'],['sunita','S','Sunita, 34 · new user','First order for a newly opened general store.'],['imran','I','Imran, 29 · bulk buyer','Bigger shop. Buys in volume for the best rate.']].map(function(x){return '<button class="jstep '+(S.persona===x[0]?'on':'')+'" data-a="persona" data-v="'+x[0]+'"><span class="n">'+x[1]+'</span><span><b>'+x[2]+'</b><span>'+x[3]+'</span></span></button>'}).join('')+
+   '<h2>App language</h2><div class="seg"><button class="'+(S.lang==='en'?'on':'')+'" data-a="setlang" data-v="en">English</button><button class="'+(S.lang==='hi'?'on':'')+'" data-a="setlang" data-v="hi">हिन्दी</button></div>'+
+   '<button class="sbtn" data-a="persona" data-v="'+S.persona+'">Restart this journey</button>'+
+   '<h2>Where AI does the work</h2>'+
+   '<div class="chg"><b>Prepares the order.</b> List and quantities are ready before he opens the app.</div>'+
+   '<div class="chg"><b>Suggests, with a reason.</b> From his orders, prices, season and nearby shops. He can say no.</div>'+
+   '<div class="chg"><b>Listens.</b> Kari call in Hindi or English, by voice, typing or sample lines.</div>'+
+   '<div class="chg"><b>Sees.</b> Reads a paper list, a shelf and the delivery bill from a photo.</div>'+
+   '<div class="chg"><b>Double-checks.</b> Flags forgotten items and limit before he pays.</div>'+
+   '<div class="chg"><b>Never decides for him.</b> Placing the order is always his tap.</div>'+
+   '<div class="chg"><b>Explains.</b> A ? on every new idea opens a plain explanation with a Listen button.</div>'+
+   '<h2>Demo notes</h2><div class="chg">Suggestions, scans and prices are sample data. The voice parsing is real and runs in the browser.</div>';
+}
+var lastScr;
+function render(){
+  var sc=document.getElementById('scr'),keep=sc&&lastScr===S.screen?sc.scrollTop:0;
+  document.getElementById('app').className=S.lang==='en'?'':'hi';
+  document.getElementById('app').innerHTML=V[S.screen]()+sheetHtml();
+  if(lastScr!==S.screen)[].forEach.call(document.getElementById('app').children,function(c){c.classList.add('enter')});
+  var n=document.getElementById('scr');if(n)n.scrollTop=keep;
+  var lg=document.getElementById('log');if(lg)lg.scrollTop=lg.scrollHeight;
+  spot();lastScr=S.screen;renderSide();
+}
+setInterval(function(){
+  var cd=document.getElementById('cd');if(cd&&S.order){var r=Math.max(0,Math.round((S.order.until-Date.now())/1000));cd.textContent=r?Math.floor(r/60)+':'+('0'+r%60).slice(-2):L('Band ho gaya','Closed');var eb=document.getElementById('editb');if(eb&&!r)eb.disabled=true}
+  var ct=document.getElementById('ct');if(ct&&S.call&&!S.call.lis){var s=Math.round((Date.now()-S.call.t0)/1000);ct.textContent=Math.floor(s/60)+':'+('0'+s%60).slice(-2)}
+},500);
+P.forEach(function(p){if(p.id!==13)(new Image()).src='img/p'+p.id+'.jpg'});['shop1','shop3'].forEach(function(s){(new Image()).src='img/'+s+'.jpg'});
+var QS=new URLSearchParams(location.search);
+if(QS.get('embed'))document.body.classList.add('embed');
+var QP=QS.get('persona');fresh(QS.get('mode')==='new'||QP==='sunita'?'new':'old',QP||undefined);
+if(QS.get('lang'))S.lang=QS.get('lang')==='hi'?'hi':'en';
+if(QS.get('embed'))S.sound=false;
+(function(g){
+  if(g==='shelf'){S.scan={mode:'shelf',st:'cam',pick:null,from:'home'};S.screen='scan';render()}
+  else if(g==='khata'){ensureOrder();S.screen='khata';render()}
+  else if(g==='first'){S.shop='Gupta Kirana Store';S.screen='first';render()}
+  else if(g&&g!=='lock')jump(g);
+  else render();
+  if(QS.get('embed'))S.sound=false;
+  if(!QS.get('embed')&&!g)welcome();
+})(QS.get('go'));
+</script>
+<script src="app.js"></script>
+</body>
+</html>
