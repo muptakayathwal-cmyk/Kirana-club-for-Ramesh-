@@ -1,7 +1,7 @@
 # Restocking for Ramesh · Kirana Club case study v2
 
-**Live prototype:** https://muptakayathwal-cmyk.github.io/kirana-club-for-ramesh-/  
-**Case study deck:** https://muptakayathwal-cmyk.github.io/kirana-club-for-ramesh-/deck.html
+**Live prototype:** https://muptakayathwal-cmyk.github.io/Kirana-club-for-Ramesh-/  
+**Case study deck:** https://muptakayathwal-cmyk.github.io/Kirana-club-for-Ramesh-/deck.html
 
 Designed by Manali Gupta. Version 2, November 2026.
 
