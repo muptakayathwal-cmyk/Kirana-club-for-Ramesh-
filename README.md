@@ -3,7 +3,7 @@
 **Live prototype:** https://muptakayathwal-cmyk.github.io/Kirana-club-for-Ramesh-/  
 **Case study deck:** https://muptakayathwal-cmyk.github.io/Kirana-club-for-Ramesh-/deck.html
 
-Designed by Manali Gupta. Version 2, November 2026.
+Designed by Manali Gupta. Version 3, November 2026.
 
 ## Put it online with GitHub Pages (about 5 minutes, no coding)
 
